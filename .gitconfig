@@ -1,0 +1,8 @@
+[user]
+	name = Ray Chen
+	email = ray@raychen.io
+[core]
+	editor = nvim
+	excludesfile = /Users/ray/.gitignore_global
+[credential]
+	helper = osxkeychain
