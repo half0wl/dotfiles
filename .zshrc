@@ -31,3 +31,5 @@ source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 zstyle ':completion:*' hosts off
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+eval "$(pyenv init -)"
+
