@@ -17,6 +17,11 @@ alias sub='sublime'
 alias httpserv='python3 -m http.server 8000 --bind 127.0.0.1'
 alias psql='/Applications/Postgres.app/Contents/Versions/10/bin/psql'
 
+# Docker aliases
+alias dcl='docker container logs -f --tail 500'
+alias dce='docker container exec'
+alias dcp='docker container ps -a'
+
 # Python
 alias cv='virtualenv --python=python3 .venv-py3 && av'  # python3 as default
 alias av='source .venv-py3/bin/activate'
