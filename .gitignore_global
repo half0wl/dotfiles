@@ -4,3 +4,4 @@ node_modules/
 .venv-py3/
 .mypy_cache/
 etc/
+tags
