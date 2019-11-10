@@ -37,4 +37,5 @@ zstyle ':completion:*' hosts off
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
 
