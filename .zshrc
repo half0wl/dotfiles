@@ -1,42 +1,60 @@
+# -----------------------------------------------------------------------------
 # Environment
+# -----------------------------------------------------------------------------
+
+# Basics
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 export TERM=xterm-256color
 export CLICOLOR=1
 export EDITOR='vim'
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-export GOPATH="${HOME}/Workspace/golang"
-export PATH=$PATH:$GOPATH/bin
 
+# PATH
+export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin/:/sbin/:/bin
+export PATH=$PATH:/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
+export PATH=$PATH:$(yarn global bin)
+
+# Others
+export PYENV_VIRTUALENV_VERBOSE_ACTIVATE=1
+
+# -----------------------------------------------------------------------------
 # Aliases
+# -----------------------------------------------------------------------------
+
+# Basics
 alias c='clear'
-alias cw='cd ~/Workspace'
+alias cw='cd ~/Code'
 alias opf='open .'
 alias reload='source ~/.zshrc'
 alias flushdns='sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
-alias sub='sublime'
 alias httpserv='python3 -m http.server 8000 --bind 127.0.0.1'
-alias psql='/Applications/Postgres.app/Contents/Versions/10/bin/psql'
-alias sc='scrapy crawl'
 
-# Docker aliases
+# Docker
 alias dcl='docker container logs -f --tail 500'
 alias dce='docker container exec'
 alias dcps='docker container ps -a'
 
-# Python
-alias cv='virtualenv --python=python3 .venv-py3 && av'  # python3 as default
-alias av='source .venv-py3/bin/activate'
-alias cv2='virtualenv --python=python .venv-py2 && av2'
-alias av2='source .venv-py2/bin/activate'
-alias dv='deactivate'
+# kubectl
+alias kc='kubectl -n'
 
-# Source Prezto
+# pyenv
+alias av='pyenv activate'
+alias dv='pyenv deactivate'
+
+# -----------------------------------------------------------------------------
+# Runtime
+# -----------------------------------------------------------------------------
+
+# Load prezto
 source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 
 # Disable hostname completion
 zstyle ':completion:*' hosts off
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Enable pyenv & pyenv-virtualenv
+eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
+# Enable fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
