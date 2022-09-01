@@ -74,3 +74,4 @@ eval "$(pyenv virtualenv-init -)"
 # Enable gcloud completions
 if [ -f '/Users/ray/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/ray/Tools/google-cloud-sdk/path.zsh.inc'; fi
 if [ -f '/Users/ray/Tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/ray/Tools/google-cloud-sdk/completion.zsh.inc'; fi
+[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
