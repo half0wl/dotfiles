@@ -13,6 +13,8 @@ export EDITOR='nvim'
 export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin/:/sbin/:/bin
 export PATH=$PATH:/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
 export PATH=$PATH:$(yarn global bin)
+export PATH=/opt/homebrew/opt/openjdk/bin:$PATH
+export PATH=/opt/homebrew/opt/openjdk@11/bin:$PATH
 
 # Others
 export PYENV_VIRTUALENV_VERBOSE_ACTIVATE=1
