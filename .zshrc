@@ -7,7 +7,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export TERM=xterm-256color
 export CLICOLOR=1
-export EDITOR='vim'
+export EDITOR='nvim'
 
 # PATH
 export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin/:/sbin/:/bin
