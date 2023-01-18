@@ -14,6 +14,9 @@ export PATH=$PATH:$(yarn global bin)
 export PATH=/opt/homebrew/opt/openjdk/bin:$PATH
 export PATH=/opt/homebrew/opt/openjdk@11/bin:$PATH
 export PATH=/usr/local/go/bin:$PATH
+export PATH=/Users/ray/.cargo/bin:$PATH
+export PATH=/opt/homebrew/opt/ruby/bin:$PATH
+export PATH=/opt/homebrew/lib/ruby/gems/3.2.0/bin
 
 # virtualenv in verbose mode
 export PYENV_VIRTUALENV_VERBOSE_ACTIVATE=1
