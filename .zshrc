@@ -42,6 +42,7 @@ alias opf='open .'
 alias reload='source ~/.zshrc'
 alias flushdns='sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
 alias httpserv='python3 -m http.server 8000 --bind 127.0.0.1'
+alias randname='python -c "from haikunator import Haikunator;print(Haikunator().haikunate());"'
 
 # Docker
 alias dcl='docker container logs -f --tail 500'
