@@ -38,6 +38,8 @@ __kube_ps1()
 # -----------------------------------------------------------------------------
 alias c='clear'
 alias cw='cd ~/Code'
+alias gr='cd ~/github.com/'
+alias gi='cd ~/github.com/half0wl'
 alias opf='open .'
 alias reload='source ~/.zshrc'
 alias flushdns='sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
