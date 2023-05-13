@@ -70,12 +70,10 @@ eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
-# Enable fzf
+# fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Enable gcloud completions
-if [ -f '/Users/ray/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/ray/Tools/google-cloud-sdk/path.zsh.inc'; fi
-if [ -f '/Users/ray/Tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/ray/Tools/google-cloud-sdk/completion.zsh.inc'; fi
+# kubectl
 [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
 
 # nvm
@@ -85,3 +83,15 @@ export NVM_DIR="$HOME/.nvm"
 
 # rbenv
 eval "$(rbenv init - zsh)"
+
+# cargo
+source "$HOME/.cargo/env"
+
+# gcloud sdk
+if [ -f '/Users/rc/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/rc/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '/Users/rc/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/rc/google-cloud-sdk/completion.zsh.inc'; fi
+
+# nix
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
