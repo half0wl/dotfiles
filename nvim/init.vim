@@ -21,7 +21,6 @@ Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'prisma/vim-prisma'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 Plug 'psf/black', { 'branch': 'stable' }
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'elixir-editors/vim-elixir'
 Plug 'elzr/vim-json'
 Plug 'rust-lang/rust.vim'
