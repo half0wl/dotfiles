@@ -27,6 +27,7 @@ Plug 'rust-lang/rust.vim'
 Plug 'HerringtonDarkholme/yats.vim'
 Plug 'Glench/Vim-Jinja2-Syntax'
 Plug 'tpope/vim-markdown'
+Plug 'jparise/vim-graphql'
 call plug#end()
 
 " -----------------------------------------------------------------------------
