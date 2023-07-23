@@ -23,7 +23,7 @@ Plug 'prisma/vim-prisma'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'elixir-editors/vim-elixir'
-Plug 'elzr/vim-json'
+Plug 'neoclide/jsonc.vim'
 Plug 'rust-lang/rust.vim'
 Plug 'HerringtonDarkholme/yats.vim'
 Plug 'Glench/Vim-Jinja2-Syntax'
