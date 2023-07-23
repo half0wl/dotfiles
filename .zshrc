@@ -55,6 +55,11 @@ alias kc='kubectl -n'
 alias av='pyenv activate'
 alias dv='pyenv deactivate'
 
+alias killport=__kill_port
+__kill_port() {
+  kill -9 $(lsof -ti:$1)
+}
+
 # -----------------------------------------------------------------------------
 # Runtime
 # -----------------------------------------------------------------------------
