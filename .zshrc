@@ -101,3 +101,8 @@ if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
   source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
 fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
+# Created by `pipx` on 2023-11-20 13:06:31
+export PATH="$PATH:/Users/rc/.local/bin"
+export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
