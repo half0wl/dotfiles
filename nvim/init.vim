@@ -53,7 +53,12 @@ material.setup{
     }
 }
 
-aerial.setup{}
+aerial.setup{
+    layout = {
+        min_width = 20,
+        default_direction = 'right'
+    }
+}
 EOF
 
 " -----------------------------------------------------------------------------
