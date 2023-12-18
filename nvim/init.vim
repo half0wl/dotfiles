@@ -7,10 +7,10 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'github/copilot.vim'
-" Plug 'github/copilot.vim'
 " Editor helpers
 Plug 'scrooloose/nerdcommenter'
 Plug 'valloric/MatchTagAlways'
+Plug 'stevearc/aerial.nvim'
 " UI
 Plug 'airblade/vim-gitgutter'
 Plug 'scrooloose/nerdtree'
@@ -29,6 +29,7 @@ Plug 'HerringtonDarkholme/yats.vim'
 Plug 'Glench/Vim-Jinja2-Syntax'
 Plug 'tpope/vim-markdown'
 Plug 'jparise/vim-graphql'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 call plug#end()
 
 " -----------------------------------------------------------------------------
@@ -37,6 +38,7 @@ call plug#end()
 lua << EOF
 local lualine = require 'lualine'
 local material = require 'material'
+local aerial = require 'aerial'
 
 lualine.setup{
     options = {
@@ -50,6 +52,8 @@ material.setup{
         'indent-blankline'
     }
 }
+
+aerial.setup{}
 EOF
 
 " -----------------------------------------------------------------------------
@@ -128,6 +132,8 @@ nnoremap <leader>s :Rg<CR>
 nnoremap <leader>c :CocCommand<CR>
 nnoremap <leader>f :call CocAction('format')<CR>
 nnoremap <leader>i :call CocAction('runCommand', 'editor.action.organizeImport')<CR>
+nnoremap <leader>a :AerialToggle<CR>
+nnoremap <leader>ds :call aerial#fzf()<CR>
 nnoremap <silent> K :call <SID>ShowDocumentation()<CR>
 
 " -----------------------------------------------------------------------------
