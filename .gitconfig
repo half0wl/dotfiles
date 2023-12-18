@@ -4,6 +4,7 @@
 [core]
 	editor = nvim
 	excludesfile = /Users/ray/.gitignore_global
+	ignorecase = false
 [credential]
 	helper = osxkeychain
 [init]
