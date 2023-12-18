@@ -22,5 +22,6 @@
   "rust-analyzer.inlayHints.discriminantHints.enable": false,
   "rust-analyzer.inlayHints.expressionAdjustmentHints.enable": false,
   "rust-analyzer.inlayHints.typeHints.enable": false,
-  "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": true
+  "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": true,
+  "tsserver.tsdk": "/Users/rc/.config/yarn/global/node_modules/typescript/lib"
 }
