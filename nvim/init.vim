@@ -148,6 +148,9 @@ let $FZF_DEFAULT_COMMAND = 'rg --files --hidden'
 let g:vim_json_syntax_conceal = 0
 let NERDTreeShowHidden=1
 let NERDSpaceDelims=1
+let g:copilot_filetypes = {
+   \ 'markdown': v:true,
+   \ }
 
 " -----------------------------------------------------------------------------
 " Linting/completions
