@@ -46,6 +46,8 @@ alias randname='python -c "from haikunator import Haikunator;print(Haikunator().
 alias dcl='docker container logs -f --tail 500'
 alias dce='docker container exec'
 alias dcps='docker container ps -a'
+alias dcbr='docker run -it $(docker build -q .)'
+alias dcbrm='docker run --rm -it $(docker build -q .)'
 
 # kubectl
 alias kubectx=__kube_ps1
