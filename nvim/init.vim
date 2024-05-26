@@ -128,6 +128,8 @@ autocmd BufWritePre * :call TrimWhitespace()
 " -----------------------------------------------------------------------------
 let mapleader=","
 nnoremap ; :Buffers<CR>
+nnoremap <PageUp> 8k
+nnoremap <PageDown> 8j
 nnoremap <leader>d dd
 nnoremap <leader>D "_dd
 nnoremap <leader>t :Files<CR>
