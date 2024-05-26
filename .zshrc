@@ -111,3 +111,20 @@ export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 # Created by `pipx` on 2023-11-20 13:06:31
 export PATH="$PATH:/Users/rc/.local/bin"
 export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
+
+# pnpm
+export PNPM_HOME="/Users/rc/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+eval "$(direnv hook zsh)"
+export PATH=/Users/rc/Workspace/rw/mono/packages/_common/deploy/local/bin:$PATH
+alias dev="bash ./dev"
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+# nvm end
