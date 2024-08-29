@@ -6,6 +6,6 @@
 	excludesfile = /Users/ray/.gitignore_global
 	ignorecase = false
 [credential]
-	helper = osxkeychain
+	helper = store
 [init]
 	defaultBranch = main
