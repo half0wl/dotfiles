@@ -65,7 +65,7 @@ EOF
 " Basics
 " -----------------------------------------------------------------------------
 syntax on
-let g:material_style = "palenight"
+let g:material_style = "darker"
 colorscheme material
 set termguicolors
 set encoding=utf-8
