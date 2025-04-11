@@ -6,15 +6,17 @@ export LANG=en_US.UTF-8
 export TERM=xterm-256color
 export CLICOLOR=1
 export EDITOR='nvim'
+export HOMEBREW_NO_AUTO_UPDATE=1
 
 ROOTDIR="/Users/rc"
 WORKSPACEDIR="$ROOTDIR/Workspace"
 
 # PATH
-export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin/:/sbin/:/bin
+export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin/:/sbin/:/bin:/opt/homebrew/sbin
 export PATH=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin:$PATH
 export PATH=/usr/local/go/bin:$PATH
 export PATH=$WORKSPACEDIR/.cargo/bin:$PATH
+export PATH="$PATH:/Users/rc/.lmstudio/bin" # LM Studio CLI
 
 # virtualenv in verbose mode
 export PYENV_VIRTUALENV_VERBOSE_ACTIVATE=1
@@ -101,10 +103,6 @@ source "$HOME/.cargo/env"
 if [ -f '/Users/rc/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/rc/google-cloud-sdk/path.zsh.inc'; fi
 if [ -f '/Users/rc/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/rc/google-cloud-sdk/completion.zsh.inc'; fi
 
-# nix
-if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
-  source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
-fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 
@@ -121,10 +119,16 @@ esac
 # pnpm end
 eval "$(direnv hook zsh)"
 export PATH=/Users/rc/Workspace/rw/mono/packages/_common/deploy/local/bin:$PATH
-alias dev="bash ./dev"
 
 # nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 # nvm end
+
+# Nix
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  unset __ETC_PROFILE_NIX_SOURCED
+  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
+# End Nix
