@@ -12,6 +12,7 @@ return {
     picker = {
       hidden = true,
       ignored = true,
+      exclude = { ".direnv", ".turbo", "dist", "node_modules", ".next" },
     },
   },
 }
