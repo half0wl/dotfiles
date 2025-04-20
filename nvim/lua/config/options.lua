@@ -6,3 +6,5 @@ vim.g.root_spec = { "cwd" }
 vim.g.maplocalleader = "\\"
 vim.opt.winbar = "%=%m %f"
 vim.opt.colorcolumn = "79"
+vim.g.snacks_animate = false
+vim.opt.conceallevel = 0

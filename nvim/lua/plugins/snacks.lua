@@ -12,7 +12,7 @@ return {
     picker = {
       hidden = true,
       ignored = true,
-      exclude = { ".direnv", ".turbo", "dist", "node_modules", ".next" },
+      exclude = { ".direnv", ".turbo", "node_modules", ".next" },
       grep = {
         finder = "rg",
       },
