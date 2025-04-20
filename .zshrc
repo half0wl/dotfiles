@@ -13,9 +13,10 @@ WORKSPACEDIR="$ROOTDIR/Workspace"
 
 # PATH
 export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin/:/sbin/:/bin:/opt/homebrew/sbin
-export PATH=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin:$PATH
-export PATH=/usr/local/go/bin:$PATH
-export PATH=$WORKSPACEDIR/.cargo/bin:$PATH
+export PATH=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin:$PATH # sublime text
+export PATH=/usr/local/go/bin:$PATH # go
+export PATH=$WORKSPACEDIR/.cargo/bin:$PATH # rust
+export PATH=$ROOTDIR/.config/composer/vendor/bin:$PATH # php
 export PATH="$PATH:/Users/rc/.lmstudio/bin" # LM Studio CLI
 
 # virtualenv in verbose mode
