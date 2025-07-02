@@ -8,7 +8,7 @@ return {
         end,
         header = [[
                                   |\---/|
- https://raychen.io               | ,_, |
+ https://ray.cat                  | ,_, |
  https://github.com/half0wl        \_`_/-..----.
  https://x.com/rayofbytes       ___/ `   ' ,""+ \  
                                 (__...'   __\    |`.___.';
