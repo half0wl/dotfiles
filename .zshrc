@@ -18,6 +18,7 @@ export PATH=/usr/local/go/bin:$PATH # go
 export PATH=$WORKSPACEDIR/.cargo/bin:$PATH # rust
 export PATH=$ROOTDIR/.config/composer/vendor/bin:$PATH # php
 export PATH="$PATH:/Users/rc/.lmstudio/bin" # LM Studio CLI
+export PATH="$PATH:/Users/rc/go/bin" # go
 
 # virtualenv in verbose mode
 export PYENV_VIRTUALENV_VERBOSE_ACTIVATE=1
@@ -67,6 +68,7 @@ __kill_port() {
 
 alias pport=lsof -ti:$1
 
+alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 
 # -----------------------------------------------------------------------------
 # Runtime
