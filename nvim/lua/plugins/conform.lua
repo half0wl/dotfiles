@@ -18,10 +18,10 @@ return {
           command = "biome",
           args = {
             "check",
-            "--formatter-enabled=true",
-            "--linter-enabled=false",
-            "--organize-imports-enabled=true",
             "--write",
+            "--formatter-enabled=true",
+            "--assist-enabled=true",
+            "--linter-enabled=false",
             "--stdin-file-path",
             "$FILENAME",
           },
