@@ -83,7 +83,6 @@ zstyle ':completion:*' hosts off
 # Enable pyenv & pyenv-virtualenv
 eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -95,12 +94,6 @@ eval "$(pyenv virtualenv-init -)"
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-
-# rbenv
-eval "$(rbenv init - zsh)"
-
-# cargo
-source "$HOME/.cargo/env"
 
 # gcloud sdk
 if [ -f '/Users/rc/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/rc/google-cloud-sdk/path.zsh.inc'; fi
