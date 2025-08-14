@@ -10,7 +10,11 @@
       "Bash(mkdir:*)",
       "Bash(pnpm run:*)",
       "Bash(pnpm lint:*)",
-      "Bash(pnpm typecheck:*)"
+      "Bash(pnpm test:*)",
+      "Bash(pnpm jest:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm biome check:*)",
+      "Bash(pnpm biome format:*)"
     ]
   },
   "enableAllProjectMcpServers": false
