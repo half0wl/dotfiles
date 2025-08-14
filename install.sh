@@ -10,6 +10,7 @@ brew install tmux
 brew install neovim
 brew install coreutils
 brew install wget
+brew install rg
 brew install direnv
 brew install pyenv
 brew install rust
