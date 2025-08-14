@@ -16,6 +16,7 @@ brew install rust
 brew install go
 brew install nvm
 brew install gh
+brew install lima
 brew install gcloud-cli
 brew install postgresql@17
 
