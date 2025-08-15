@@ -3,7 +3,7 @@
 # https://github.com/half0wl/toolkit                                         #
 # MIT License (c) 2025 Ray Chen <meow@ray.cat>                               #
 #                                                                            #
-# setup.sh - Set up a macOS system for development.                    #
+# setup.sh - Set up a macOS system for development.                          #
 #                                                                            #
 # Usage:                                                                     #
 #                                                                            #
