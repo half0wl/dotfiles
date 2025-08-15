@@ -1,15 +1,20 @@
 # ========================================================================== #
 # https://github.com/half0wl/toolkit                                         #
-# MIT License - (c) 2025 Ray Chen <meow@ray.cat>                             #
+# MIT License (c) 2025 Ray Chen <meow@ray.cat>                               #
 #                                                                            #
-# _lib.sh - A set of utility functions for shell scripts.                    #
-# To use this, run `source _lib.sh` in a shell script.                       #
+# _lib.sh - A set of utility functions for shell scripts. To use this in a   #
+# shell script:                                                              #
+#                                                                            #
+#   ```                                                                      #
+#   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"               #
+#   source "${SCRIPT_DIR}/_lib.sh"                                           #
+#   ```                                                                      #
 #                                                                            #
 # Available Functions:                                                       #
 #                                                                            #
 #   write_info(message)      - Print informational message                   #
 #   write_ok(message)        - Print successful message                      #
-#   write_warning(message)   - Print warning message                         #
+#   write_warn(message)      - Print warning message                         #
 #   write_error(message)     - Print error message                           #
 #   write_busy(message)      - Start progress spinner with message           #
 #   write_done([message?])   - Stop spinner, optionally show completion msg  #
@@ -126,7 +131,7 @@ function write_ok() {
   printf '%b%s%b\n' "${GREEN_R}[ ✔ ] " "${1}" "${NC}"
 }
 
-# write_warning() prints a warning message in yellow.
+# write_warn() prints a warning message in yellow.
 #
 # Arguments:
 #
@@ -134,8 +139,8 @@ function write_ok() {
 #
 # Usage:
 #
-#   write_warning "This is a warning message"
-function write_warning() {
+#   write_warn "This is a warning message"
+function write_warn() {
   printf '%b%s%b\n' "${YELLOW_R}[ ⚠ ] " "${1}" "${NC}"
 }
 
