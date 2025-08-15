@@ -217,6 +217,11 @@ No additional config.
 - Position on screen -> Right
 - Show suggested & recent apps in Dock -> Off
 
+### Control Center
+
+- Show date -> Display time with seconds
+- Battery -> Show percentage
+
 ## License
 
 [MIT](./LICENSE)
