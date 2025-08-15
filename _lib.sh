@@ -128,7 +128,7 @@ function write_info() {
 #
 #   write_ok "This is an ok message"
 function write_ok() {
-  printf '%b%s%b\n' "${GREEN_R}[ ✔ ] " "${1}" "${NC}"
+  printf '%b%s%b\n' "${GREEN_B}[ ✔ ] " "${1}" "${NC}"
 }
 
 # write_warn() prints a warning message in yellow.
