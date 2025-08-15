@@ -34,8 +34,7 @@ These are apps not bootstrapped by the setup script, and should be installed
 
 - Startup Mode -> Verbose
 - Applications -> Display debug menu -> On
-- Menus
-  - Show Quit Finder -> On
+- Menus -> Show Quit Finder -> On
 - Misc
   - CrashReporter Mode -> Developer
   - Prevent `.DS_Store` files from being created on network devices -> On
@@ -126,10 +125,7 @@ These are apps not bootstrapped by the setup script, and should be installed
 
 #### Advanced
 
-- File name:
-  ```
-  screencap-,%y,-,%m,-,%d,-,%H,.,%M,.,%S
-  ```
+- File name: `screencap-,%y,-,%m,-,%d,-,%H,.,%M,.,%S`
 - Remove illegal characters -> On
 - Use UTC time -> Off
 - Keep history -> 1 month
