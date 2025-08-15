@@ -1,0 +1,6 @@
+.DS_Store
+.venv-py2/
+.venv-py3/
+.venv/
+.mypy_cache/
+*.crt
