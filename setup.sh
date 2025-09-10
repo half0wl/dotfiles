@@ -30,6 +30,7 @@ BREW_DEPS=(
   "lima"
   "k9s"
   "gcloud-cli"
+  "grpcurl"
   "grip"
 
   # Databases
@@ -43,6 +44,7 @@ BREW_DEPS=(
   "npm"
   "pnpm"
   "poetry"
+  "protobuf"
 )
 
 BREW_CASK_DEPS=(
@@ -222,6 +224,13 @@ if [[ -e ~/.claude/settings.json || -L ~/.claude/settings.json ]]; then
 fi
 ln -s ~/dotfiles/conf/claude/settings.json ~/.claude/settings.json
 write_ok "--> ~/.claude/settings.json"
+
+if [[ -e ~/.claude/statusline.sh || -L ~/.claude/statusline.sh ]]; then
+  write_warn "removing existing ~/.claude/statusline.sh"
+  rm -f ~/.claude/statusline.sh
+fi
+ln -s ~/dotfiles/conf/claude/statusline.sh ~/.claude/statusline.sh
+write_ok "--> ~/.claude/statusline.sh"
 
 GHOSTTY_CONF_PATH="$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 if [[ -e "$GHOSTTY_CONF_PATH" || -L "$GHOSTTY_CONF_PATH" ]]; then

@@ -5,6 +5,7 @@
       "Bash(cd:*)",
       "Bash(mv:*)",
       "Bash(rg:*)",
+      "Bash(cat:*)",
       "Bash(grep:*)",
       "Bash(find:*)",
       "Bash(mkdir:*)",
@@ -14,8 +15,16 @@
       "Bash(pnpm jest:*)",
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm biome check:*)",
-      "Bash(pnpm biome format:*)"
+      "Bash(pnpm biome format:*)",
+      "Bash(wails dev:*)",
+      "Bash(wails build:*)"
     ]
   },
-  "enableAllProjectMcpServers": false
+  "enableAllProjectMcpServers": false,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  }
 }
+
