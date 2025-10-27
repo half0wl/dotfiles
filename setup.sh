@@ -46,6 +46,9 @@ BREW_DEPS=(
   "pnpm"
   "poetry"
   "protobuf"
+
+  # Misc.
+  "exiftool"
 )
 
 BREW_CASK_DEPS=(
