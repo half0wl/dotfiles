@@ -132,6 +132,16 @@ These are apps not bootstrapped by the setup script, and should be installed
 - All-in-One -> Remember last selection
 - Add "2x" suffix to retina screenshots -> On
 
+### [Audio Hijack](https://rogueamoeba.com/audiohijack/) + [Loopback](https://rogueamoeba.com/loopback/)
+
+#### Audio Hijack Default
+
+![Audio Hijack Default Settings](docs/img/audio_hijack_default.png)
+
+#### Loopback Default
+
+![Loopback Default Settings](docs/img/loopback_default.png)
+
 ### [Firefox](https://www.firefox.com/en-US/)
 
 - Sign in with Firefox Sync
