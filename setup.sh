@@ -27,6 +27,7 @@ BREW_DEPS=(
   # Tools
   "rg"
   "gh"
+  "dive"
   "lima"
   "k9s"
   "gcloud-cli"
