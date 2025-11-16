@@ -23,6 +23,15 @@ return {
         },
         biome = {
           enabled = true,
+          -- Override cmd to use local biome first
+          cmd = function()
+            local local_biome = vim.fn.getcwd() .. "/node_modules/.bin/biome"
+            if vim.fn.filereadable(local_biome) == 1 then
+              return { local_biome, "lsp-proxy" }
+            end
+            -- Fallback to bunx
+            return { "bunx", "biome", "lsp-proxy" }
+          end,
         },
         tailwindcss = {
           enabled = true,
@@ -30,6 +39,20 @@ return {
         tsserver = {
           enabled = true,
         },
+      },
+      setup = {
+        -- Custom setup for biome to handle the cmd function
+        biome = function(_, opts)
+          local lspconfig = require("lspconfig")
+
+          -- Resolve the cmd if it's a function
+          if type(opts.cmd) == "function" then
+            opts.cmd = opts.cmd()
+          end
+
+          lspconfig.biome.setup(opts)
+          return true -- Prevent default setup
+        end,
       },
     },
   },
