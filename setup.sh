@@ -23,6 +23,7 @@ BREW_DEPS=(
   "coreutils"
   "direnv"
   "wget"
+  "fd"
 
   # Tools
   "rg"
