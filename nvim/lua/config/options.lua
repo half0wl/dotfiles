@@ -8,3 +8,12 @@ vim.opt.winbar = "%=%m %f"
 vim.opt.colorcolumn = "79"
 vim.g.snacks_animate = false
 vim.opt.conceallevel = 0
+
+-- Disable LSP file watching to prevent EMFILE errors
+vim.lsp.set_log_level("off")
+local ok, wf = pcall(require, "vim.lsp._watchfiles")
+if ok then
+  wf._watchfunc = function()
+    return function() end
+  end
+end
