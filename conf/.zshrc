@@ -14,7 +14,12 @@ export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/usr/sbin/:/sbin/:/bin:/op
 export PATH=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin:$PATH # sublime text
 export PATH=/usr/local/go/bin:$PATH # go
 export PATH=/Users/rc/go/bin:$PATH # go
+export PATH="$HOME/.local/bin:$PATH"
 export PATH=$WORKSPACEDIR/.cargo/bin:$PATH # rust
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH" # libpq
+export BUN_INSTALL="$HOME/.bun" # bun
+export PATH="$BUN_INSTALL/bin:$PATH" # bun
+export PATH="$HOME/.local/bin:$PATH"
 export PATH="$PATH"
 source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 
@@ -110,3 +115,6 @@ fi
 
 # direnv
 eval "$(direnv hook zsh)"
+
+# bun completions
+[ -s "/Users/rc/.bun/_bun" ] && source "/Users/rc/.bun/_bun"
