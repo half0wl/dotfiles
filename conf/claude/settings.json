@@ -23,7 +23,10 @@
       "Bash(lsof:*)",
       "Bash(pm2 list:*)",
       "Bash(pm2 logs:*)",
-      "Bash(pm2 stop:*)"
+      "Bash(pm2 stop:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_network_requests",
+      "mcp__playwright__browser_snapshot"
     ]
   },
   "enableAllProjectMcpServers": false,
@@ -31,6 +34,10 @@
     "type": "command",
     "command": "~/.claude/statusline.sh",
     "padding": 0
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-code-plugins": true,
+    "feature-dev@claude-code-plugins": true
   },
   "alwaysThinkingEnabled": true
 }
