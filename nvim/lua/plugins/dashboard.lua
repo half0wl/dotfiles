@@ -9,8 +9,8 @@ return {
         header = [[
                                   |\---/|
  https://ray.cat                  | ,_, |
- https://github.com/half0wl        \_`_/-..----.
- https://x.com/rayofbytes       ___/ `   ' ,""+ \  
+ https://x.com/raychen             \_`_/-..----.
+ https://github.com/half0wl    ___/ `   ' ,""+ \
                                 (__...'   __\    |`.___.';
                                   (_,...'(_,.`__)/'.....+
  ]],
