@@ -232,6 +232,21 @@ No additional config.
 - Show date -> Display time with seconds
 - Battery -> Show percentage
 
+## Notes
+
+### neovim plugin code-signing
+
+On Apple Silicon Macs, unsigned native code won't execute. Neovim plugins with
+compiled components (like treesitter parsers) need to be signed after
+compilation to load properly.
+
+Sometimes, this borks during plugin updates, so you may need to re-sign them
+manually by running the following command in your terminal:
+
+```sh
+find ~/.local/share/nvim -name "*.so" | while read lib; do sudo codesign --force --sign - "$lib"; done
+```
+
 ## License
 
 [MIT](./LICENSE)
