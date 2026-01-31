@@ -4,4 +4,4 @@ keybind = cmd+shift+down=new_split:down
 font-family = "Monaspace Krypton"
 font-size = 18
 window-padding-x = 25
-window-padding-y = 25
+window-padding-y = 10
