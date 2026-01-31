@@ -1,4 +1,5 @@
 return {
+  { "github/copilot.vim", enabled = false },
   { "nvim-pack/nvim-spectre", enabled = false },
   { "nvim-mini/mini.indentscope", enabled = false },
   { "nvim-mini/mini.pairs", enabled = false },
