@@ -34,9 +34,12 @@ BREW_DEPS=(
   "gcloud-cli"
   "grpcurl"
   "grip"
+  "gitui"
+  "mtr"
 
   # Databases
   "postgresql@17"
+  "redis"
 
   # Languages
   "go"
@@ -171,10 +174,13 @@ mkdir -p ~/.cache
 mkdir -p ~/.claude
 mkdir -p ~/.config
 mkdir -p ~/.config/nvim
+mkdir -p ~/.config/gitui
+mkdir -p ~/.config/tmux/plugins
 sudo chown -R $(whoami) ~/.cache
 sudo chown -R $(whoami) ~/.claude
 sudo chown -R $(whoami) ~/.config
 sudo chown -R $(whoami) ~/.config/nvim
+sudo chown -R $(whoami) ~/.config/gitui
 write_ok "directories set up complete"
 
 # ========================================================================== #
@@ -244,6 +250,24 @@ if [[ -e "$GHOSTTY_CONF_PATH" || -L "$GHOSTTY_CONF_PATH" ]]; then
 fi
 ln -s ~/dotfiles/conf/ghostty/config "$GHOSTTY_CONF_PATH"
 write_ok "--> $GHOSTTY_CONF_PATH"
+
+if [[ -e ~/.config/gitui/theme.ron || -L ~/.config/gitui/theme.ron ]]; then
+  write_warn "removing existing ~/.config/gitui/theme.ron"
+  rm -f ~/.config/gitui/theme.ron
+fi
+ln -s ~/dotfiles/conf/gitui/theme.ron ~/.config/gitui/theme.ron
+write_ok "--> ~/.config/gitui/theme.ron"
+
+for plugin in ~/dotfiles/conf/tmux-plugins/*; do
+  plugin_name=$(basename "$plugin")
+  chmod +x "$plugin"
+  if [[ -e ~/.config/tmux/plugins/"$plugin_name" || -L ~/.config/tmux/plugins/"$plugin_name" ]]; then
+    write_warn "removing existing ~/.config/tmux/plugins/$plugin_name"
+    rm -f ~/.config/tmux/plugins/"$plugin_name"
+  fi
+  ln -s "$plugin" ~/.config/tmux/plugins/"$plugin_name"
+  write_ok "--> ~/.config/tmux/plugins/$plugin_name"
+done
 
 write_ok "configuration symlinks created"
 
