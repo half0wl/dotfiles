@@ -118,3 +118,6 @@ eval "$(direnv hook zsh)"
 
 # bun completions
 [ -s "/Users/rc/.bun/_bun" ] && source "/Users/rc/.bun/_bun"
+
+# Added by raildev installer
+export PATH="$HOME/.raildev:$PATH"
