@@ -39,6 +39,7 @@
       "Bash(pm2 list:*)",
       "Bash(pm2 logs:*)",
       "Bash(pm2 stop:*)",
+      "Read(~/.claude/plans/*)",
       "Skill(frontend-design)",
       "Skill(design-principles)",
       "mcp__playwright__browser_navigate",
