@@ -11,7 +11,9 @@
 vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function()
     vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#2d3149" })
+    vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#565f89" })
   end,
 })
 -- Apply immediately for current session
 vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#2d3149" })
+vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#565f89" })

@@ -17,15 +17,6 @@ return {
       grep = {
         finder = "rg",
       },
-      sources = {
-        explorer = {
-          layout = {
-            layout = {
-              border = "rounded",
-            },
-          },
-        },
-      },
     },
   },
 }
