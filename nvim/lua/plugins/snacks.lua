@@ -1,7 +1,7 @@
 return {
   "snacks.nvim",
   opts = {
-    explorer = { enabled = false },
+    explorer = { enabled = true },
     indent = { enabled = true },
     input = { enabled = true },
     notifier = { enabled = true },
@@ -16,6 +16,15 @@ return {
       exclude = { ".direnv", ".turbo", "node_modules", ".next", "dist" },
       grep = {
         finder = "rg",
+      },
+      sources = {
+        explorer = {
+          layout = {
+            layout = {
+              border = "rounded",
+            },
+          },
+        },
       },
     },
   },

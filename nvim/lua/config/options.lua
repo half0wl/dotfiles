@@ -8,6 +8,28 @@ vim.opt.winbar = "%=%m %f"
 vim.opt.colorcolumn = "79"
 vim.g.snacks_animate = false
 vim.opt.conceallevel = 0
+vim.opt.fillchars:append({ vert = "│", vertleft = "│", vertright = "│", horiz = "─", horizup = "─", horizdown = "─" })
+
+-- Add borders and padding to diagnostic floats
+vim.diagnostic.config({
+  float = {
+    border = "rounded",
+    prefix = " ",
+    suffix = " ",
+  },
+})
+
+-- Add borders and padding to LSP hover and signature help
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+  border = "rounded",
+  pad_left = 1,
+  pad_right = 1,
+})
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+  border = "rounded",
+  pad_left = 1,
+  pad_right = 1,
+})
 
 -- Disable LSP file watching to prevent EMFILE errors
 vim.lsp.set_log_level("off")
