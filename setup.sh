@@ -27,6 +27,7 @@ BREW_DEPS=(
 
   # Tools
   "rg"
+  "yq"
   "gh"
   "dive"
   "lima"
