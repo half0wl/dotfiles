@@ -127,6 +127,7 @@
       "Bash(gh issue list:*)",
       "Bash(gh issue view:*)",
       "WebSearch",
+      "WebFetch",
       "Read(~/.claude/plans/*)",
       "Skill(frontend-design)",
       "Skill(design-principles)",
