@@ -131,6 +131,7 @@
       "Read(~/.claude/plans/*)",
       "Skill(frontend-design)",
       "Skill(design-principles)",
+      "Skill(check-impl)",
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_network_requests",
       "mcp__playwright__browser_snapshot",
