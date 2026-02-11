@@ -37,6 +37,7 @@ BREW_DEPS=(
   "grip"
   "gitui"
   "mtr"
+  "tree"
 
   # Databases
   "postgresql@17"
