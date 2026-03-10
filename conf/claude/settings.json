@@ -146,6 +146,8 @@
       "mcp__playwright__browser_type"
     ]
   },
+  "model": "opus[1m]",
+  "effortLevel": "high",
   "enableAllProjectMcpServers": false,
   "statusLine": {
     "type": "command",
