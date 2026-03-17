@@ -187,6 +187,19 @@
     "command": "~/.claude/statusline.sh",
     "padding": 0
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/protect-main.sh"
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
     "frontend-design@claude-code-plugins": true,
     "feature-dev@claude-code-plugins": true
