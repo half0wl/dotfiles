@@ -8,6 +8,8 @@ allowed-tools: Read, Glob, Grep, Bash, Edit, Write
 
 Stacked PRs split a large change into a chain of dependent pull requests, each targeting the previous one as its base. This makes code review faster and more focused. This skill automates the entire lifecycle: creating the branch chain, opening PRs with correct bases and stack-aware descriptions, rebasing after merges, and updating PR bases on GitHub.
 
+**Typical invocation context:** The user runs this skill while on the feature branch. On startup, record the current branch name as the **source branch** (`git branch --show-current`). Use this to read diffs and cherry-pick commits from, but never modify it. When creating stack branches, switch away from the source branch to `origin/<default>` first.
+
 ---
 
 ## SAFETY RULES
@@ -122,14 +124,25 @@ rc/oauth/03-add-migration              | #125 | OPEN   | rc/oauth/02-implement-p
 
 ### b. Create New Stack
 
-1. Detect the default branch.
-2. Run `git fetch origin`.
-3. From `origin/<default>` (NOT from the feature branch), create the first branch:
+1. Record the current branch as the **source branch**: `git branch --show-current`. This is the feature branch to read/cherry-pick from. It will not be modified.
+2. Detect the default branch.
+3. Run `git fetch origin`.
+4. **Check for ref conflicts**: Git cannot create `rc/<name>/01-desc` if a branch `rc/<name>` already exists (refs clash — a ref can't be both a leaf and a prefix). Before creating, check:
+   ```bash
+   git show-ref --verify --quiet refs/heads/rc/<stack-name>
+   ```
+   If it exists, ask the user to rename or delete it first (locally and on the remote):
+   ```bash
+   git branch -m rc/<stack-name> rc/<stack-name>-old   # rename local
+   git push origin :rc/<stack-name> rc/<stack-name>-old  # rename remote
+   ```
+   Also check for remote-only refs: `git show-ref --verify --quiet refs/remotes/origin/rc/<stack-name>` — if a remote tracking ref exists, prune it with `git fetch --prune origin`.
+5. From `origin/<default>` (NOT from the feature branch), create the first branch:
    ```bash
    git checkout -b rc/<stack-name>/01-<desc> origin/<default>
    ```
-4. The user then cherry-picks or manually adds the first slice of changes.
-5. The original feature branch is never checked out or modified.
+6. Cherry-pick or add the first slice of changes from the source branch. Use `git log <default>...<source-branch>` and `git diff <default>...<source-branch>` to understand the full changeset and plan slices.
+7. The source (feature) branch is never checked out or modified.
 
 ### c. Add to Stack
 
@@ -248,3 +261,4 @@ When creating or updating PRs, regenerate this section with current state for al
 - **Out-of-order merges**: If a branch is merged before its predecessor, flag this as an error. The stack should be merged in order (01 first, then 02, etc.).
 - **Detached HEAD**: Alert the user and refuse to continue. A branch must be checked out.
 - **Push failures**: If `--force-with-lease` fails, someone else pushed. Alert the user to review before retrying.
+- **Git ref conflicts** (`cannot lock ref ... exists; cannot create`): This happens when a branch like `rc/<name>` already exists and you try to create `rc/<name>/01-desc` — git refs can't be both a leaf and a directory prefix. Solutions: (1) choose a different stack name that doesn't collide (e.g., `rc/<name>-stack/01-desc`), or (2) rename/delete the conflicting branch first. Always check for this before creating the first branch in a stack.
