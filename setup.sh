@@ -245,6 +245,13 @@ fi
 ln -s ~/dotfiles/conf/claude/statusline.sh ~/.claude/statusline.sh
 write_ok "--> ~/.claude/statusline.sh"
 
+if [[ -e ~/.claude/hooks || -L ~/.claude/hooks ]]; then
+  write_warn "removing existing ~/.claude/hooks"
+  rm -rf ~/.claude/hooks
+fi
+ln -s ~/dotfiles/conf/claude/hooks ~/.claude/hooks
+write_ok "--> ~/.claude/hooks"
+
 GHOSTTY_CONF_PATH="$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 if [[ -e "$GHOSTTY_CONF_PATH" || -L "$GHOSTTY_CONF_PATH" ]]; then
   write_warn "removing existing $GHOSTTY_CONF_PATH"
