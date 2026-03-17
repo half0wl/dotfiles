@@ -252,6 +252,13 @@ fi
 ln -s ~/dotfiles/conf/claude/hooks ~/.claude/hooks
 write_ok "--> ~/.claude/hooks"
 
+if [[ -e ~/.claude/skills || -L ~/.claude/skills ]]; then
+  write_warn "removing existing ~/.claude/skills"
+  rm -rf ~/.claude/skills
+fi
+ln -s ~/dotfiles/conf/claude/skills ~/.claude/skills
+write_ok "--> ~/.claude/skills"
+
 GHOSTTY_CONF_PATH="$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 if [[ -e "$GHOSTTY_CONF_PATH" || -L "$GHOSTTY_CONF_PATH" ]]; then
   write_warn "removing existing $GHOSTTY_CONF_PATH"
