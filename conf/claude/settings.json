@@ -196,13 +196,7 @@
     ]
   },
   "model": "opus[1m]",
-  "effortLevel": "high",
   "enableAllProjectMcpServers": false,
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.sh",
-    "padding": 0
-  },
   "hooks": {
     "PreToolUse": [
       {
@@ -216,12 +210,15 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  },
   "enabledPlugins": {
     "frontend-design@claude-code-plugins": true,
     "feature-dev@claude-code-plugins": true
   },
-  "alwaysThinkingEnabled": true,
-  "skipDangerousModePermissionPrompt": true,
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
       "source": {
@@ -229,5 +226,9 @@
         "repo": "anthropics/claude-plugins-official"
       }
     }
-  }
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true,
+  "fastMode": true
 }
