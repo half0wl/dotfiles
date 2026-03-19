@@ -246,6 +246,13 @@ fi
 ln -s ~/dotfiles/conf/claude/statusline.sh ~/.claude/statusline.sh
 write_ok "--> ~/.claude/statusline.sh"
 
+if [[ -e ~/.claude/CLAUDE.md || -L ~/.claude/CLAUDE.md ]]; then
+  write_warn "removing existing ~/.claude/CLAUDE.md"
+  rm -f ~/.claude/CLAUDE.md
+fi
+ln -s ~/dotfiles/conf/claude/CLAUDE.md ~/.claude/CLAUDE.md
+write_ok "--> ~/.claude/CLAUDE.md"
+
 if [[ -e ~/.claude/hooks || -L ~/.claude/hooks ]]; then
   write_warn "removing existing ~/.claude/hooks"
   rm -rf ~/.claude/hooks
