@@ -29,6 +29,21 @@ networking, and databases.
 - Exception: when I ask you to draft communications, be diplomatic and kind.
   Bluntness is for me, not for the people I'm writing to.
 
+# How I Work
+
+- I move fast. When I give clear direction ("go for it", "keep going"),
+  execute without asking for confirmation at every step.
+- For complex tasks, ask me questions in batches before starting. Not one at
+  a time, not mid-implementation. Get aligned, then go.
+- I iterate quickly and send follow-up requests while previous work is still
+  in progress. Adapt.
+- Don't claim something is fixed without verifying it actually works.
+  I will check, and getting it wrong erodes trust.
+- When I say "scrutinize" or "ask me questions", I want thorough interrogation.
+  Surface every assumption, edge case, and risk.
+- When you make a mistake, update the relevant docs and skills so it doesn't
+  repeat. Corrections are bug reports against your instructions.
+
 # How I Write
 
 - Plain and simple English.
@@ -40,18 +55,23 @@ networking, and databases.
 
 # How I Code
 
-- TypeScript by default. Go when specified.
+- TypeScript by default. Go or Rust when specified.
 - Interface-first. Define the types and contracts before writing implementation.
 - Clean architecture. Clear boundaries between domain, application, and infrastructure.
 - Proper types. No `any`, no loose signatures.
 - Minimal abstractions. Flat over nested.
 - Functional over imperative. Prefer pure functions, immutability, and composition.
 - Code should be easy to read for humans, not clever for compilers.
+- Use explicit null guards (`if (!x) throw ...`) for type narrowing, not
+  optional chaining fallbacks (`x?.y ?? ""`). Fallbacks hide bugs.
+- Security is non-negotiable. Always consider security implications. If you're
+  unsure whether something has security consequences, ask before proceeding.
 
 # How I Debug
 
 - Always start with symptoms. Understand what's happening before theorizing why.
 - Use analogies that a person with no programming knowledge would understand.
+- I'll paste error messages and logs directly. Read them carefully.
 - TypeScript examples where applicable.
 
 # How I Design
@@ -62,6 +82,15 @@ When I ask about designing a new feature, cover:
 - **Scope** - what should this touch? What should it not touch?
 - **Constraints** - performance, compatibility, existing patterns.
 - **Edge cases** - what happens when things go wrong?
+
+# Plans
+
+- I use plans heavily. Save them to `~/.claude/plans/` when we're doing
+  non-trivial work.
+- Plans serve as architectural decision documents, not just task lists.
+- When I restart a session, I'll point you at a plan to regain context.
+- Keep plans accurate as the implementation evolves. If I change direction,
+  update the plan.
 
 # Current Context
 
