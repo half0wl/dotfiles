@@ -317,6 +317,16 @@ fi
 
 # ========================================================================== #
 
+write_info "installing claude code..."
+if command -v claude >/dev/null 2>&1; then
+  write_ok "claude code already installed, skipping"
+else
+  curl -fsSL https://claude.ai/install.sh | bash
+  write_ok "claude code installed"
+fi
+
+# ========================================================================== #
+
 write_ok "setup for '$hostname' complete!"
 write_ok "please reboot your system by running:"
 echo
