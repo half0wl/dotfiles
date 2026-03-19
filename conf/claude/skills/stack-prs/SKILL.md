@@ -203,7 +203,7 @@ This is the most complex operation. Execute step by step:
      ```
    - **Safety check**, then force-push with lease.
    - PR base stays as its predecessor (unchanged).
-6. Update all PR bodies with current stack status.
+6. **Always refresh stack status on ALL PRs** (merged and open). For each PR in the stack, query its state and update its body with the current stack table. This includes merged PRs — their status column should show `✅ merged` and the stack table should reflect the current state of all other PRs. Also update PR titles if the total count has changed.
 7. Optionally delete merged local and remote branches:
    ```bash
    git branch -d rc/<stack-name>/<merged-branch>
@@ -243,14 +243,49 @@ Every PR in the stack gets an auto-generated stack section in its body:
 ```markdown
 ## Stack
 
-| #   | PR       | Title                        | Status      |
-| --- | -------- | ---------------------------- | ----------- |
-| 1   | #123     | extract interfaces           | merged      |
-| 2   | **#124** | **implement oauth provider** | **this PR** |
-| 3   | #125     | add migration                | open        |
+| #   | PR       | Title                        | Status           |
+| --- | -------- | ---------------------------- | ---------------- |
+| 1   | #123     | extract interfaces           | ✅ merged        |
+| 2   | **#124** | **implement oauth provider** | **👉 this PR**  |
+| 3   | #125     | add migration                | ⏳ open          |
 ```
 
-When creating or updating PRs, regenerate this section with current state for all PRs in the stack using `gh pr edit <number> --body`.
+Status values:
+- `✅ merged` — PR has been merged
+- `**👉 this PR**` — the current PR (bold the entire row)
+- `⏳ open` — PR is open, waiting for review or blocked on a predecessor
+
+When creating or updating PRs, regenerate this section with current state for **all** PRs in the stack using `gh pr edit <number> --body`. Query each PR's actual merge state (`gh pr view <number> --json state`) to set the correct status emoji.
+
+### h. Refresh Stack Status
+
+When the user asks to "update status", "refresh stack", or "sync PR descriptions":
+
+1. Discover all branches in the stack.
+2. For each branch, query the PR state: `gh pr view <branch> --json number,state,title`
+3. Regenerate the Stack table in every PR body with current statuses (✅/👉/⏳).
+4. Update all PR bodies in parallel: `gh pr edit <number> --body "..."`
+
+---
+
+## Build Isolation
+
+**Each PR in the stack must build/typecheck/lint independently.** When checking out files from the source branch with `git checkout <source> -- <file>`, the file gets the *final* state — which may reference code that only exists in later PRs.
+
+Before committing each branch, verify that shared files only reference symbols, modules, or resources available at *that point* in the stack:
+
+1. **Aggregation files** (barrel exports, index files, registries, route tables, DI containers, etc.): Only include entries whose implementations exist on the current branch. If the source branch's aggregation file references items introduced in later PRs, strip those entries. Add them back in the PR that introduces the dependency.
+
+2. **Files that consume later-PR code** (imports, includes, configuration references): If a file was modified on the source branch to use something introduced in a later PR, keep that file at its default-branch state in earlier PRs. Move the change to the PR that introduces the dependency.
+
+3. **Verification step**: After staging files for a branch, scan for forward-references — imports/requires/includes that point to files not yet on disk:
+   ```bash
+   # Check that all local references in changed files resolve to existing files
+   git diff --cached --name-only | xargs grep -h "import\|require\|include" 2>/dev/null | # adapt pattern to project language
+   ```
+   If the project has a build/typecheck command, run it to confirm the branch compiles cleanly.
+
+When splitting a feature branch, treat `git checkout <source> -- <file>` as a starting point, then **edit the file to remove forward-references** before committing.
 
 ---
 
