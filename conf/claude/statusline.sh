@@ -9,7 +9,7 @@ BLUE_R='\033[1;94m'
 NC='\033[0m'
 
 function model() {
-  echo "$input" | jq -r '.model.display_name'
+  echo "$input" | jq -r '.model.id'
 }
 
 function current_dir() {
@@ -64,7 +64,7 @@ CURRENT=$(basename $(current_dir))
 if [ "$PROJECT" = "$CURRENT" ]; then
   DIR_SEGMENT="📁$BLUE_R$PROJECT$NC"
 else
-  DIR_SEGMENT="🏗️$BLUE_R$PROJECT$NC|📂$BLUE_R$CURRENT$NC"
+  DIR_SEGMENT="📁$BLUE_R$PROJECT$NC/$BLUE_R$CURRENT$NC"
 fi
 
-echo -e "$PURPLE_R[$(model)]$NC $DIR_SEGMENT|$GREEN_R+$(lines_added)$NC/$RED_R-$(lines_removed)$NC|💰$BLUE_R\$$(cost)$NC|⏱️$BLUE_R$(session_time)$NC|🧠$(context_usage)"
+echo -e "🤖$PURPLE_R$(model)$NC $DIR_SEGMENT ⚡️$(context_usage)@$BLUE_R$(session_time)$NC@$GREEN_R+$(lines_added)$NC$RED_R-$(lines_removed)$NC=$BLUE_R\$$(cost)$NC"
