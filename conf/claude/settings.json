@@ -229,6 +229,5 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true,
-  "fastMode": true
+  "skipDangerousModePermissionPrompt": true
 }
