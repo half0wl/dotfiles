@@ -9,7 +9,7 @@ BLUE_R='\033[1;94m'
 NC='\033[0m'
 
 function model() {
-  echo "$input" | jq -r '.model.id'
+  echo "$input" | jq -r '.model.id | sub("^claude-"; "")'
 }
 
 function current_dir() {
