@@ -7,6 +7,7 @@ vim.g.maplocalleader = "\\"
 vim.opt.winbar = "%=%m %f"
 vim.opt.colorcolumn = "79"
 vim.g.snacks_animate = false
+vim.opt.relativenumber = false
 vim.opt.conceallevel = 0
 vim.opt.fillchars:append({ vert = "│", vertleft = "│", vertright = "│", horiz = "─", horizup = "─", horizdown = "─" })
 
