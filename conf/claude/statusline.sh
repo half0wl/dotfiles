@@ -32,6 +32,23 @@ function lines_removed() {
   echo "$input" | jq -r '.cost.total_lines_removed'
 }
 
+function session_time() {
+  local ms=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
+  local total_secs=$((ms / 1000))
+  local mins=$((total_secs / 60))
+  local secs=$((total_secs % 60))
+  printf "%dm%02ds" "$mins" "$secs"
+}
+
+function context_usage() {
+  local pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0')
+  local color="$GREEN_R"
+  if [ "$pct" -ge 75 ]; then
+    color="$RED_R"
+  fi
+  printf "${color}%d%%${NC}" "$pct"
+}
+
 function git_branch() {
   if git rev-parse --git-dir >/dev/null 2>&1; then
     BRANCH=$(git branch --show-current 2>/dev/null)
@@ -41,9 +58,13 @@ function git_branch() {
   fi
 }
 
-echo -e "$PURPLE_R[$(model)]$NC \
-🏗️$BLUE_R$(basename $(project_dir))$NC | \
-📂$BLUE_R$(basename $(current_dir))$NC | \
-🪵$BLUE_R$(git_branch)$NC | \
-$GREEN_R+$(lines_added)$NC/$RED_R-$(lines_removed)$NC | \
-💰$BLUE_R\$$(cost)$NC"
+PROJECT=$(basename $(project_dir))
+CURRENT=$(basename $(current_dir))
+
+if [ "$PROJECT" = "$CURRENT" ]; then
+  DIR_SEGMENT="📁$BLUE_R$PROJECT$NC"
+else
+  DIR_SEGMENT="🏗️$BLUE_R$PROJECT$NC|📂$BLUE_R$CURRENT$NC"
+fi
+
+echo -e "$PURPLE_R[$(model)]$NC $DIR_SEGMENT|$GREEN_R+$(lines_added)$NC/$RED_R-$(lines_removed)$NC|💰$BLUE_R\$$(cost)$NC|⏱️$BLUE_R$(session_time)$NC|🧠$(context_usage)"
