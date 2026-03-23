@@ -195,7 +195,7 @@ Do not skip dimensions. "Probably fine" is not an evaluation.
 
 ### Loose Ends
 
-- **TODOs/FIXMEs**: Search changed files for `TODO`, `FIXME`, `HACK`, `XXX`, `PLACEHOLDER` — each must reference a tracked issue.
+- **TODOs/FIXMEs**: In branch diff mode, flag any `TODO`, `FIXME`, `HACK`, `XXX`, `PLACEHOLDER` in changed lines as a warning — don't block on them, but call them out.
 - **Dead code**: Functions, types, constants, or imports written but never used. (`#[allow(dead_code)]` is a smell.)
 - **Commented-out code**: Delete it. Version control remembers.
 - **Placeholder values**: Hardcoded strings, magic numbers, dummy data that should be constants or configuration.
