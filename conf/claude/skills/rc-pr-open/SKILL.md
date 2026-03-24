@@ -29,6 +29,7 @@ The system area this change touches.
 
 - **Single-package repos**: use the domain area (e.g., `auth`, `billing`, `ingest`, `api`)
 - **Monorepos**: use `package/area` where `package` is the package name and `area` is the domain within it. For example, in a monorepo with `packages/auth/session/...`, use `auth/session`. The package name acts as a namespace.
+- **Subpackage resolution**: When a monorepo has top-level directories containing subpackages (e.g., `apps/web`, `apps/server`, `apps/mobile`), resolve the scope to the subpackage where the majority of changes live. Don't stop at the top-level directory — a PR touching mostly `apps/web/` should be scoped to `web`, not `apps`.
 
 Pick the most specific scope that accurately covers the change. If the change genuinely spans multiple unrelated scopes, use `*` as the scope (e.g., `refactor(*): normalize error handling across services`). Don't comma-separate.
 
