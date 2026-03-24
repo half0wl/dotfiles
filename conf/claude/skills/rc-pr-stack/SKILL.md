@@ -1,5 +1,5 @@
 ---
-name: rc-stack-prs
+name: rc-pr-stack
 description: Manage stacked PRs for large changes. Split work into chained PRs, create PRs with stack-aware descriptions, update branches after merges, and switch PR bases on GitHub. Use when the user wants to stack PRs, update a stack, view a stack, or create PRs for a stack. CRITICAL: Never commits or pushes to main/master.
 allowed-tools: Read, Glob, Grep, Bash, Edit, Write
 ---
@@ -83,25 +83,30 @@ Store the result and reuse it throughout the operation.
 
 ## PR Title Convention
 
-PR titles use a stack-aware prefix format:
+Stack PRs use a modified version of the standard PR title format (defined in `/rc-pr-write`). The conventional-commit title is wrapped with a stack position prefix:
 
 ```
-[<feature>-<number>/<total>] <description>
+[<feature>-<number>/<total>] <type>(<scope>): <description>
 ```
 
 - `<feature>`: short feature name (ask the user what to use if not obvious)
 - `<number>`: this PR's position in the stack (1-indexed)
 - `<total>`: total number of PRs in the stack
-- `<description>`: concise description of this slice
+- `<type>`, `<scope>`, `<description>`: follow the format in `/rc-pr-write` — type required, scope required, imperative mood, lowercase
 
 Examples:
 
 ```
-[oauth-3/5] add migration scripts
-[oauth-1/5] extract auth interfaces
+[oauth-1/5] refactor(auth): extract provider interfaces
+[oauth-2/5] feat(auth): add OIDC provider implementation
+[oauth-3/5] feat(auth/migration): add session token migration scripts
 ```
 
 When creating PRs, **ask the user what feature prefix to use** for the title format before proceeding. Update the `<total>` in all PR titles whenever the stack size changes (e.g., when adding a new branch or after cleanup).
+
+## PR Description Convention
+
+Use the description format from `/rc-pr-write` (Summary, Changes, Breaking changes if any, Test plan) for the non-stack portion of each PR body. The Stack table section (defined below) is appended after the standard description.
 
 ---
 

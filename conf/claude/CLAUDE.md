@@ -83,6 +83,13 @@ When I ask about designing a new feature, cover:
 - **Constraints** - performance, compatibility, existing patterns.
 - **Edge cases** - what happens when things go wrong?
 
+# Pull Requests
+
+When creating or updating PRs, always use the format defined in
+`~/.claude/skills/rc-pr-write/SKILL.md`. Use `/rc-pr-write` for new PRs and
+`/rc-pr-update` for existing ones. Never run `gh pr create` directly — always
+go through the skill.
+
 # Plans
 
 - I use plans heavily. Save them to `~/.claude/plans/` when we're doing
