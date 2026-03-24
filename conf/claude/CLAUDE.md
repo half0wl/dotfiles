@@ -86,7 +86,7 @@ When I ask about designing a new feature, cover:
 # Pull Requests
 
 When creating or updating PRs, always use the format defined in
-`~/.claude/skills/rc-pr-write/SKILL.md`. Use `/rc-pr-write` for new PRs and
+`~/.claude/skills/rc-pr-open/SKILL.md`. Use `/rc-pr-open` for new PRs and
 `/rc-pr-update` for existing ones. Never run `gh pr create` directly — always
 go through the skill.
 

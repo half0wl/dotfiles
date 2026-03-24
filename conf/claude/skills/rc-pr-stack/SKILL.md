@@ -83,7 +83,7 @@ Store the result and reuse it throughout the operation.
 
 ## PR Title Convention
 
-Stack PRs use a modified version of the standard PR title format (defined in `/rc-pr-write`). The conventional-commit title is wrapped with a stack position prefix:
+Stack PRs use a modified version of the standard PR title format (defined in `/rc-pr-open`). The conventional-commit title is wrapped with a stack position prefix:
 
 ```
 [<feature>-<number>/<total>] <type>(<scope>): <description>
@@ -92,7 +92,7 @@ Stack PRs use a modified version of the standard PR title format (defined in `/r
 - `<feature>`: short feature name (ask the user what to use if not obvious)
 - `<number>`: this PR's position in the stack (1-indexed)
 - `<total>`: total number of PRs in the stack
-- `<type>`, `<scope>`, `<description>`: follow the format in `/rc-pr-write` — type required, scope required, imperative mood, lowercase
+- `<type>`, `<scope>`, `<description>`: follow the format in `/rc-pr-open` — type required, scope required, imperative mood, lowercase
 
 Examples:
 
@@ -106,7 +106,7 @@ When creating PRs, **ask the user what feature prefix to use** for the title for
 
 ## PR Description Convention
 
-Use the description format from `/rc-pr-write` (Summary, Changes, Breaking changes if any, Test plan) for the non-stack portion of each PR body. The Stack table section (defined below) is appended after the standard description.
+Use the description format from `/rc-pr-open` (Summary, Changes, Breaking changes if any, Test plan) for the non-stack portion of each PR body. The Stack table section (defined below) is appended after the standard description.
 
 ---
 

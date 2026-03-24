@@ -66,7 +66,7 @@ From the diff and commits, determine:
 
 ### Format Reference
 
-Use the title and description format defined in `/rc-pr-write` (`~/.claude/skills/rc-pr-write/SKILL.md`). That skill is the single source of truth for PR formatting:
+Use the title and description format defined in `/rc-pr-open` (`~/.claude/skills/rc-pr-open/SKILL.md`). That skill is the single source of truth for PR formatting:
 
 - **Title**: `<type>(<scope>): <description>` — conventional commits, scope required
 - **Description**: Summary, Changes, Breaking changes (if any), Test plan

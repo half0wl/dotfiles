@@ -1,5 +1,5 @@
 ---
-name: rc-pr-write
+name: rc-pr-open
 description: Create a new PR with standardized conventional-commit title and structured description. Analyzes the branch diff, drafts title/description, presents for approval, then creates the PR.
 allowed-tools: Read, Glob, Grep, Bash, Agent
 user-invocable: true
