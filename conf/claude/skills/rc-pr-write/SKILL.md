@@ -30,7 +30,7 @@ The system area this change touches.
 - **Single-package repos**: use the domain area (e.g., `auth`, `billing`, `ingest`, `api`)
 - **Monorepos**: use `package/area` where `package` is the package name and `area` is the domain within it. For example, in a monorepo with `packages/auth/session/...`, use `auth/session`. The package name acts as a namespace.
 
-Pick the most specific scope that accurately covers the change. If the change genuinely spans multiple unrelated scopes, use the most prominent one — don't comma-separate.
+Pick the most specific scope that accurately covers the change. If the change genuinely spans multiple unrelated scopes, use `*` as the scope (e.g., `refactor(*): normalize error handling across services`). Don't comma-separate.
 
 ### Description
 
