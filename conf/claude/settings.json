@@ -192,7 +192,8 @@
       "mcp__playwright__browser_close",
       "mcp__playwright__browser_wait_for",
       "mcp__playwright__browser_type"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "opus[1m]",
   "enableAllProjectMcpServers": false,
@@ -228,5 +229,6 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "skipAutoPermissionPrompt": true
 }
