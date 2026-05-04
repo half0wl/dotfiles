@@ -1,10 +1,10 @@
 {
   "lastChangelogVersion": "0.72.1",
-  "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-4-7",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
   "defaultThinkingLevel": "xhigh",
   "enableInstallTelemetry": false,
-  "theme": "railway",
+  "theme": "Railway",
   "packages": [
     "npm:pi-web-access",
     "npm:pi-mcp-adapter",
@@ -12,5 +12,12 @@
     "npm:pi-lens",
     "npm:pi-markdown-preview",
     "npm:pi-playwright"
-  ]
+  ],
+  "steeringMode": "one-at-a-time",
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "warnings": {
+    "anthropicExtraUsage": true
+  }
 }
