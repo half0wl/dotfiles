@@ -6,7 +6,6 @@
   "enableInstallTelemetry": false,
   "theme": "railway",
   "packages": [
-    "npm:@ollama/pi-web-search",
     "npm:pi-web-access",
     "npm:pi-mcp-adapter",
     "npm:pi-subagents",
