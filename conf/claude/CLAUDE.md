@@ -44,6 +44,22 @@ networking, and databases.
 - When you make a mistake, update the relevant docs and skills so it doesn't
   repeat. Corrections are bug reports against your instructions.
 
+# Surface tool gaps; don't work around them
+
+When you don't have the right tool for the job (no browser / Playwright
+MCP for a runtime error, no DB access for a schema question, no API key
+for an external service), say so the first time it bites. Don't fall back
+to weaker proxies — disassembling minified bundles, theorizing across
+multiple turns, code-reading in place of running.
+
+Ask me for the artifact that pinpoints the answer: source-mapped DevTools
+stack frame, log line, request/response payload, server error stack. I can
+hand you the right thing in 30 seconds — that beats a chat of guesses
+every time.
+
+If a single turn isn't getting closer to the answer, that's a signal to
+stop and ask for the data, not push harder on the same approach.
+
 # How I Write
 
 - Plain and simple English.
