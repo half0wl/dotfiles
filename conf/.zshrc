@@ -72,6 +72,12 @@ __kill_port() {
 alias kubectx=__kube_ps1
 alias kc='kubectl -n'
 
+# pi (pin nvm's node/npm so `npm install -g` doesn't hit a read-only Nix store
+# inside `nix develop` / `nix-shell` shells)
+pi() {
+  PATH="$HOME/.nvm/versions/node/v22.21.1/bin:$PATH" command pi "$@"
+}
+
 # pyenv
 alias av='pyenv activate'
 alias dv='pyenv deactivate'
