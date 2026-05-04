@@ -4,5 +4,14 @@
   "defaultModel": "claude-opus-4-7",
   "defaultThinkingLevel": "xhigh",
   "enableInstallTelemetry": false,
-  "theme": "railway"
+  "theme": "railway",
+  "packages": [
+    "npm:@ollama/pi-web-search",
+    "npm:pi-web-access",
+    "npm:pi-mcp-adapter",
+    "npm:pi-subagents",
+    "npm:pi-lens",
+    "npm:pi-markdown-preview",
+    "npm:pi-playwright"
+  ]
 }
