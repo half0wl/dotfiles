@@ -76,11 +76,46 @@ BREW_CASK_DEPS=(
 
 # ========================================================================== #
 
+setup_pi() {
+  write_info "setting up pi config..."
+  mkdir -p ~/.pi/agent
+  if [[ -e ~/.pi/agent/settings.json || -L ~/.pi/agent/settings.json ]]; then
+    write_warn "removing existing ~/.pi/agent/settings.json"
+    rm -f ~/.pi/agent/settings.json
+  fi
+  ln -s ~/dotfiles/conf/pi/agent/settings.json ~/.pi/agent/settings.json
+  write_ok "--> ~/.pi/agent/settings.json"
+
+  if [[ -e ~/.pi/agent/themes || -L ~/.pi/agent/themes ]]; then
+    write_warn "removing existing ~/.pi/agent/themes"
+    rm -rf ~/.pi/agent/themes
+  fi
+  ln -s ~/dotfiles/conf/pi/themes ~/.pi/agent/themes
+  write_ok "--> ~/.pi/agent/themes"
+
+  if [[ -e ~/.pi/agent/extensions || -L ~/.pi/agent/extensions ]]; then
+    write_warn "removing existing ~/.pi/agent/extensions"
+    rm -rf ~/.pi/agent/extensions
+  fi
+  ln -s ~/dotfiles/conf/pi/extensions ~/.pi/agent/extensions
+  write_ok "--> ~/.pi/agent/extensions"
+}
+
 if [[ $# -eq 0 ]]; then
   echo "Usage   : $0 <hostname>"
   echo "Example : $0 rays-macbook-pro"
+  echo
+  echo "Subcommands:"
+  echo "  $0 pi    # set up pi config + symlinks only (no install)"
   exit 1
 fi
+
+if [[ "$1" == "pi" ]]; then
+  setup_pi
+  write_ok "pi setup complete"
+  exit 0
+fi
+
 hostname="$1"
 
 write_info "configurationg macOS system..."
@@ -179,11 +214,14 @@ mkdir -p ~/.config
 mkdir -p ~/.config/nvim
 mkdir -p ~/.config/gitui
 mkdir -p ~/.config/tmux/plugins
+mkdir -p ~/.agents
+mkdir -p ~/.pi/agent
 sudo chown -R $(whoami) ~/.cache
 sudo chown -R $(whoami) ~/.claude
 sudo chown -R $(whoami) ~/.config
 sudo chown -R $(whoami) ~/.config/nvim
 sudo chown -R $(whoami) ~/.config/gitui
+sudo chown -R $(whoami) ~/.pi
 write_ok "directories set up complete"
 
 # ========================================================================== #
@@ -267,6 +305,15 @@ fi
 ln -s ~/dotfiles/conf/claude/skills ~/.claude/skills
 write_ok "--> ~/.claude/skills"
 
+if [[ -e ~/.agents/skills || -L ~/.agents/skills ]]; then
+  write_warn "removing existing ~/.agents/skills"
+  rm -rf ~/.agents/skills
+fi
+ln -s ~/dotfiles/conf/claude/skills ~/.agents/skills
+write_ok "--> ~/.agents/skills"
+
+setup_pi
+
 GHOSTTY_CONF_PATH="$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 if [[ -e "$GHOSTTY_CONF_PATH" || -L "$GHOSTTY_CONF_PATH" ]]; then
   write_warn "removing existing $GHOSTTY_CONF_PATH"
@@ -330,6 +377,16 @@ if command -v claude >/dev/null 2>&1; then
 else
   curl -fsSL https://claude.ai/install.sh | bash
   write_ok "claude code installed"
+fi
+
+# ========================================================================== #
+
+write_info "installing pi coding agent..."
+if command -v pi >/dev/null 2>&1; then
+  write_ok "pi already installed, skipping"
+else
+  npm install -g @mariozechner/pi-coding-agent
+  write_ok "pi installed"
 fi
 
 # ========================================================================== #
