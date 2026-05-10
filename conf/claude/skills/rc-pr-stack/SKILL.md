@@ -1,6 +1,6 @@
 ---
 name: rc-pr-stack
-description: Manage stacked PRs for large changes. Split work into chained PRs, create PRs with stack-aware descriptions, update branches after merges, and switch PR bases on GitHub. Use when the user wants to stack PRs, update a stack, view a stack, or create PRs for a stack. CRITICAL: Never commits or pushes to main/master.
+description: "Manage stacked PRs for large changes. Split work into chained PRs, create PRs with stack-aware descriptions, update branches after merges, and switch PR bases on GitHub. Use when the user wants to stack PRs, update a stack, view a stack, or create PRs for a stack. CRITICAL: Never commits or pushes to main/master."
 allowed-tools: Read, Glob, Grep, Bash, Edit, Write
 ---
 
