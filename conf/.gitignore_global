@@ -5,3 +5,5 @@
 .mypy_cache/
 *.crt
 **/.claude/settings.local.json
+.playwright/
+**/.playwright/
