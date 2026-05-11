@@ -86,6 +86,13 @@ setup_pi() {
   ln -s ~/dotfiles/conf/pi/agent/settings.json ~/.pi/agent/settings.json
   write_ok "--> ~/.pi/agent/settings.json"
 
+  if [[ -e ~/.pi/agent/SYSTEM.md || -L ~/.pi/agent/SYSTEM.md ]]; then
+    write_warn "removing existing ~/.pi/agent/SYSTEM.md"
+    rm -f ~/.pi/agent/SYSTEM.md
+  fi
+  ln -s ~/dotfiles/conf/pi/agent/SYSTEM.md ~/.pi/agent/SYSTEM.md
+  write_ok "--> ~/.pi/agent/SYSTEM.md"
+
   if [[ -e ~/.pi/agent/themes || -L ~/.pi/agent/themes ]]; then
     write_warn "removing existing ~/.pi/agent/themes"
     rm -rf ~/.pi/agent/themes
