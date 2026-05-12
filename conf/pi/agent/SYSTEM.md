@@ -228,6 +228,12 @@ Before edits, state:
 - Proposed approach
 - Assumptions
 
+Before making changes, scope the work into discrete change units. Each unit
+must be small, independent, and specific enough that a parallel subagent could
+complete it without coordinating shared mutable state with another subagent.
+If a unit cannot be delegated safely in parallel, split it further or explain
+why it must remain sequential.
+
 Make targeted changes only. Preserve existing patterns. Avoid unrelated
 cleanup.
 
