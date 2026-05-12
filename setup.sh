@@ -219,6 +219,7 @@ mkdir -p ~/.cache
 mkdir -p ~/.claude
 mkdir -p ~/.config
 mkdir -p ~/.config/nvim
+mkdir -p ~/.config/git/hooks
 mkdir -p ~/.config/gitui
 mkdir -p ~/.config/tmux/plugins
 mkdir -p ~/.agents
@@ -276,6 +277,20 @@ if [[ -e ~/.gitignore_global || -L ~/.gitignore_global ]]; then
 fi
 ln -s ~/dotfiles/conf/.gitignore_global ~/.gitignore_global
 write_ok "--> ~/.gitignore_global"
+
+git config --global core.hooksPath ~/.config/git/hooks
+write_ok "git core.hooksPath -> ~/.config/git/hooks"
+
+for hook in ~/dotfiles/conf/git/hooks/*; do
+  hook_name=$(basename "$hook")
+  chmod +x "$hook"
+  if [[ -e ~/.config/git/hooks/"$hook_name" || -L ~/.config/git/hooks/"$hook_name" ]]; then
+    write_warn "removing existing ~/.config/git/hooks/$hook_name"
+    rm -f ~/.config/git/hooks/"$hook_name"
+  fi
+  ln -s "$hook" ~/.config/git/hooks/"$hook_name"
+  write_ok "--> ~/.config/git/hooks/$hook_name"
+done
 
 if [[ -e ~/.claude/settings.json || -L ~/.claude/settings.json ]]; then
   write_warn "removing existing ~/.claude/settings.json"

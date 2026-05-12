@@ -5,6 +5,7 @@
 	editor = nvim
 	excludesfile = ~/.gitignore_global
 	ignorecase = false
+	hooksPath = /Users/rc/.config/git/hooks
 [credential]
 	helper = store
 [init]

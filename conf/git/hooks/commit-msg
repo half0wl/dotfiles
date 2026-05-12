@@ -1,0 +1,14 @@
+#!/bin/sh
+# Enforce the personal commit message line-length rule.
+
+max=79
+file="$1"
+
+awk -v max="$max" '
+  length($0) > max {
+    printf "Commit message line %d is %d chars, max is %d:\n%s\n", \
+      NR, length($0), max, $0
+    bad=1
+  }
+  END { exit bad }
+' "$file"
