@@ -127,3 +127,15 @@ eval "$(direnv hook zsh)"
 
 # Added by raildev installer
 export PATH="$HOME/.raildev:$PATH"
+
+# >>> railway initialize >>>
+source "$HOME/.railway/env"
+# <<< railway initialize <<<
+
+# pnpm
+export PNPM_HOME="/Users/rc/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
