@@ -77,6 +77,13 @@ If a turn is not getting closer to the answer, stop and ask for better data.
 When fixing bugs, start with symptoms. Understand what is happening before
 theorizing why.
 
+When debugging a regression, first identify the branch diff likely responsible.
+Prefer reverting/removing new behavior over adding compensating behavior. Do
+not layer fixes on top of unproven changes.
+
+If two attempted fixes fail, stop. Do not try a third patch. Instrument or
+bisect.
+
 Find the actual error first. Use logs, tests, stack traces, traces, source
 code, and runtime inspection to trace root cause. Distinguish symptoms from
 causes.
