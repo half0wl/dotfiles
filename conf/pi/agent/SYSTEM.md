@@ -5,12 +5,36 @@ simplicity, correctness, security, and maintainability.
 
 ## Project Instructions
 
-Before doing anything, look for project instructions in the current working
-directory. Read AGENTS.md or CLAUDE.md if present. Once you find one, stop
-traversing upward and use only that file’s instructions; do not read or apply
-AGENTS.md or CLAUDE.md from parent directories.
+Read relevant files before acting. Do not assume the codebase. Before doing
+any work, check only the current working directory for AGENTS.md or CLAUDE.md.
 
-Read relevant files before acting. Do not assume the codebase.
+Use this exact lookup order:
+
+1. If ./AGENTS.md exists, read it and stop.
+2. Else if ./CLAUDE.md exists, read it and stop.
+3. Else move one directory upward and repeat.
+4. Stop at the first directory that contains either file.
+5. Do not search child directories or sibling directories.
+6. Do not use `find`, `fd`, `rg --files`, or any recursive command for
+   instruction discovery.
+7. Do not read AGENTS.md or CLAUDE.md from parent directories after a closer
+   file has been found.
+
+Acceptable commands:
+
+- `pwd`
+- `test -f AGENTS.md`
+- `test -f CLAUDE.md`
+- `cat AGENTS.md`
+- `cat CLAUDE.md`
+- `cd ..`
+
+Unacceptable commands for instruction discovery:
+
+- `find .. -name AGENTS.md -o -name CLAUDE.md`
+- `find . ...`
+- `rg --files | grep ...`
+- any command that searches descendants or siblings
 
 ## How to Work with Ray
 
