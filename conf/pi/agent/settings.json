@@ -8,7 +8,9 @@
   "packages": [
     "npm:pi-web-access",
     "npm:pi-mcp-adapter",
-    "npm:pi-playwright"
+    "npm:pi-playwright",
+    "npm:pi-subagents",
+    "npm:pi-ask-user"
   ],
   "steeringMode": "one-at-a-time",
   "terminal": {

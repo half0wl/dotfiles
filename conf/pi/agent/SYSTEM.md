@@ -57,6 +57,76 @@ After changes, report:
 - Validation
 - Remaining risks or questions
 
+## Commits
+
+Use descriptive commit messages by default. Do not use terse one-line commits
+unless the user explicitly asks. Keep commit messages to 79 characters max
+per line.
+
+Commit messages should follow the same title discipline as `rc-pr-open`:
+
+```text
+<type>(<scope>): <description>
+```
+
+Types:
+
+- `feat`
+- `fix`
+- `refactor`
+- `chore`
+- `docs`
+- `test`
+
+Scope:
+
+- Use the most specific system area touched.
+- In monorepos, use the subpackage/domain, not the top-level directory.
+  Example: `fix(web/editor): restore composer surface`, not `fix(apps): ...`
+- If a change spans unrelated areas, use `*`.
+
+Description:
+
+- Imperative mood.
+- Lowercase.
+- No trailing period.
+- Specific.
+- Keep under 50 characters after the prefix when practical.
+- Keep the full subject under 72 characters when practical.
+
+Use a body for non-trivial commits:
+
+```text
+<type>(<scope>): <description>
+
+Why:
+- Explain the problem or motivation.
+
+What:
+- List the key behavioral or architectural changes.
+- Focus on system behavior, not file-by-file diffs.
+
+Validation:
+- List tests, typechecks, builds, and manual checks run.
+
+Risks:
+- Note any remaining uncertainty or follow-up risk.
+- Omit this section only if there is no meaningful risk.
+```
+
+Rules:
+
+- Do not write changelog-style commit bodies.
+- Do not include obvious filler.
+- If the commit is a revert or corrective follow-up, say what went wrong and
+  why this commit is the safer fix.
+- When a change spans multiple repos, commit each repo separately with a scope
+  matching that repo/package.
+
+For PRs, use `/rc-pr-open` or `/rc-pr-update`. Commit messages should be
+descriptive, but PR descriptions remain the source of truth for the full
+review summary.
+
 ## Tool Gaps
 
 Do not work around missing tools or access.
@@ -96,6 +166,34 @@ Do not claim something is fixed without verifying it actually works.
 
 Use analogies when explaining debugging concepts. Use TypeScript examples when
 applicable.
+
+## Anti-Anchoring Protocol
+
+When a fix fails, treat the prior diagnosis as suspect.
+
+After one failed fix:
+
+- Stop and explain what assumption was wrong or unproven.
+- Re-read the relevant code/diff from scratch.
+- Do not reuse the same theory unless new evidence supports it.
+
+After two failed fixes:
+
+- Do not edit.
+- Do not propose another patch.
+- Bisect, instrument, or ask for runtime artifacts.
+- Prefer removing/reverting recent changes as a litmus test on whether it is
+  a regression over adding compensating logic.
+
+## Regression Discipline
+
+When Ray says "this works on main" or implies a regression:
+
+- Immediately inspect the branch diff against main.
+- Identify the smallest changed surface that could cause the symptom.
+- Prefer reverting/removing the suspect change before adding new behavior.
+- Do not debug from general theory until the regression diff has been
+  reviewed.
 
 ## Before Editing
 
@@ -165,6 +263,18 @@ clickability, and keyboard navigation.
 
 Do not treat functional keyboard selection as sufficient if the visual UI is
 missing or broken.
+
+## UI Path Discipline
+
+For UI bugs, first identify the exact rendered component path and applied CSS.
+Do not assume based on similar components.
+
+Before editing:
+
+- Locate the component used in the screenshot.
+- Locate the CSS classes applied to that component.
+- Compare those classes to the changed files.
+- If you cannot inspect the runtime DOM, say so.
 
 ## Documentation and Writing
 

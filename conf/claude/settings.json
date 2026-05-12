@@ -195,6 +195,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "claude-opus-4-6[1m]",
   "enableAllProjectMcpServers": false,
   "statusLine": {
     "type": "command",
@@ -216,5 +217,6 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "skipDangerousModePermissionPrompt": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "fastMode": true
 }

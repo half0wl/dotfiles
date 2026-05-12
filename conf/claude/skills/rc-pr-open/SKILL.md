@@ -71,9 +71,6 @@ test(auth/session): cover token refresh edge cases
 ## Test plan
 
 <Bulleted checklist. Include both automated tests (what was added/updated) and manual verification steps where relevant.>
-
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
 ### Description rules
