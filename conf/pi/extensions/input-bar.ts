@@ -6,7 +6,7 @@
  *   ─────────────────────────────────────────🤖opus-4-7[xhigh]──
  *   > <user input>
  *   ─────────────────────────────────────────────────────────────
- *           📁 dotfiles • 🧠 0% • ⌛ 0m52s • 📊 +0-0 • 🎫 0 • 💰 $0.00
+ *           📁 dotfiles • 🪵 main • 📊 +0-0 • 💰 $0.00
  */
 
 import type { AssistantMessage } from "@mariozechner/pi-ai";
@@ -22,23 +22,9 @@ import { truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
 import { execFileSync } from "node:child_process";
 import { basename } from "node:path";
 
-const CTX_WARN_PCT = 75;
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
-// --- formatting helpers ---------------------------------------------------
-
-function fmtTokens(n: number): string {
-	if (n < 1000) return `${n}`;
-	if (n < 1_000_000) return `${(n / 1000).toFixed(1)}k`;
-	return `${(n / 1_000_000).toFixed(2)}M`;
-}
-
-function fmtDuration(ms: number): string {
-	const total = Math.floor(ms / 1000);
-	const m = Math.floor(total / 60);
-	const s = total % 60;
-	return `${m}m${String(s).padStart(2, "0")}s`;
-}
+// --- git helpers ----------------------------------------------------------
 
 const projectRootCache = new Map<string, string | null>();
 function projectRoot(cwd: string): string | null {
@@ -54,6 +40,20 @@ function projectRoot(cwd: string): string | null {
 		return out || null;
 	} catch {
 		projectRootCache.set(cwd, null);
+		return null;
+	}
+}
+
+function currentBranch(cwd: string): string | null {
+	try {
+		const out = execFileSync("git", ["branch", "--show-current"], {
+			cwd,
+			stdio: ["ignore", "pipe", "ignore"],
+		})
+			.toString()
+			.trim();
+		return out || null;
+	} catch {
 		return null;
 	}
 }
@@ -128,10 +128,8 @@ export default function (pi: ExtensionAPI) {
 	let isWorking = false;
 	let spinnerIndex = 0;
 	let spinnerTimer: ReturnType<typeof setInterval> | undefined;
-	let tickTimer: ReturnType<typeof setInterval> | undefined;
 	let activeTui: TUI | undefined;
 
-	let sessionStart = Date.now();
 	let linesAdded = 0;
 	let linesRemoved = 0;
 
@@ -181,24 +179,15 @@ export default function (pi: ExtensionAPI) {
 
 	pi.on("session_shutdown", () => {
 		stopSpinner();
-		if (tickTimer) {
-			clearInterval(tickTimer);
-			tickTimer = undefined;
-		}
 		activeTui = undefined;
 	});
 
 	pi.on("session_start", (_event, ctx) => {
-		sessionStart = Date.now();
 		linesAdded = 0;
 		linesRemoved = 0;
 
 		// We render our own spinner in the top-left of the editor border.
 		ctx.ui.setWorkingVisible(false);
-
-		// Refresh every second so the elapsed time updates.
-		if (tickTimer) clearInterval(tickTimer);
-		tickTimer = setInterval(() => activeTui?.requestRender(), 1000);
 
 		// --- editor ---------------------------------------------------------
 
@@ -292,50 +281,38 @@ export default function (pi: ExtensionAPI) {
 
 					// Aggregate session usage from the message branch.
 					let cost = 0;
-					let latestInput = 0;
 					for (const e of ctx.sessionManager.getBranch()) {
 						if (e.type === "message" && e.message.role === "assistant") {
 							const m = e.message as AssistantMessage;
 							cost += m.usage.cost.total;
-							latestInput = m.usage.input;
 						}
 					}
 
 					const cwd = process.cwd();
 					const root = projectRoot(cwd);
 					const project = basename(root ?? cwd);
-
-					const ctxWindow = ctx.model?.contextWindow ?? 0;
-					const ctxPct =
-						ctxWindow > 0 ? Math.round((latestInput / ctxWindow) * 100) : 0;
-					const ctxColor = ctxPct >= CTX_WARN_PCT ? "error" : "success";
+					const branch = currentBranch(root ?? cwd);
 
 					const dirSeg = `📁 ${theme.fg("accent", project)}`;
-					const ctxSeg = `🧠 ${theme.fg(ctxColor, `${ctxPct}%`)}`;
-					const timeSeg = `⌛ ${theme.fg("success", fmtDuration(Date.now() - sessionStart))}`;
+					const branchSeg = branch
+						? `🪵 ${theme.fg("mdLink", branch)}`
+						: undefined;
 					const diffSeg =
 						linesAdded || linesRemoved
 							? `📊 ${theme.fg("success", `+${linesAdded}`)}${theme.fg("error", `-${linesRemoved}`)}`
 							: `📊 ${theme.fg("dim", "+0-0")}`;
-					const tokenSeg = `🎫 ${theme.fg("dim", fmtTokens(latestInput))}`;
 					const costSeg = `💰 ${theme.fg("mdLink", `$${cost.toFixed(2)}`)}`;
 
 					const sep = theme.fg("dim", " • ");
-					const line = [
-						dirSeg,
-						ctxSeg,
-						timeSeg,
-						diffSeg,
-						tokenSeg,
-						costSeg,
-					].join(sep);
+					const line = [dirSeg, branchSeg, diffSeg, costSeg]
+						.filter((seg): seg is string => Boolean(seg))
+						.join(sep);
 
-					// Right-align with a small gutter from the edge, plus a blank
-					// line below for breathing room before the next prompt.
+					// Right-align with a small gutter from the edge.
 					const gutter = 1;
 					const lineWidth = visibleWidth(line);
 					const pad = Math.max(0, width - lineWidth - gutter);
-					return [truncateToWidth(" ".repeat(pad) + line, width), ""];
+					return [truncateToWidth(" ".repeat(pad) + line, width)];
 				},
 			};
 		});
