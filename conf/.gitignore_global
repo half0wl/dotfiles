@@ -7,6 +7,8 @@
 **/.claude/settings.local.json
 .playwright/
 **/.playwright/
+.playwright-mcp/
+**/.playwright-mcp/
 
 __pycache__/
 *.pyc
