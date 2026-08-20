@@ -1,13 +1,13 @@
 ---
 name: rc-pr-open
-description: Create a new PR with standardized conventional-commit title and structured description. Analyzes the branch diff, drafts title/description, presents for approval, then creates the PR.
+description: Create a new PR with a conventional-commit title and a diff-grounded reviewer narrative. Analyzes the full branch diff, drafts evidence-led metadata, presents it for approval, then creates the PR.
 allowed-tools: Read, Glob, Grep, Bash, Agent
 user-invocable: true
 ---
 
 # PR Write
 
-Create a new pull request with a standardized title and description. This skill is the single source of truth for PR formatting. Other skills (`rc-pr-update`, `rc-pr-stack`) reference this format.
+Create a new pull request with a standardized title and description.
 
 **You do NOT commit or push code.** If unpushed commits exist, prompt the user to push first.
 
@@ -53,32 +53,61 @@ test(auth/session): cover token refresh edge cases
 
 ---
 
-## PR Description Format
+## PR Description Style
+
+A PR body is a reviewer narrative, not a form and not a changelog. Derive it from the full diff against the base branch. The reader should understand the central change, what it buys, how the implementation hangs together, and which behaviors or contracts may move.
+
+### Default shape
 
 ```markdown
 ## Summary
 
-<2-5 sentences. What this PR does and why. Lead with the what, follow with the why. Be specific about the approach — not just "refactored X" but "replaced X with Y because Z.">
+<One or two unheaded thesis sentences. For a replacement or refactor, name both the old mechanism and the new one.>
+
+- <Concrete system, user, correctness, or performance outcome>
+- <Another outcome>
 
 ## Changes
 
-<Bulleted list of key changes, grouped logically. Each bullet describes a meaningful behavior change, not a file-level diff. Focus on what's different for the system, not what lines moved.>
+- <Concept or subsystem> — <mechanism, important detail, and consequence>
+- <Concept or subsystem> — <mechanism, important detail, and consequence>
 
-## Breaking changes
+## Breaking Changes
 
-<What breaks, who is affected, and the migration path. If nothing breaks, omit this section entirely — do not include it with "None.">
-
-## Test plan
-
-<Bulleted checklist. Include both automated tests (what was added/updated) and manual verification steps where relevant.>
+<If there are breaking changes, distinguish API compatibility from observable behavior and describe each affected behavior or consumer. If there are none, write exactly `N/A`.>
 ```
 
-### Description rules
+Adapt the shape to the change:
 
-- **No changelog-style per-commit breakdowns.** The reviewer has the commit list.
-- **No obvious filler.** "This PR makes changes to the codebase" is noise.
-- **Lead with intent.** Why does this change exist? What problem does it solve?
-- **Be honest about risk.** If something is uncertain or fragile, say so in the summary or changes.
+- The opening thesis is required. Do not put it under a generic `Summary` heading.
+- Use an outcome list when the change has several distinct benefits. Lead with what improves, then explain why.
+- Usually include `### Changes` for a substantial PR. Group bullets by architecture or behavior, not by file or commit.
+- Always include `### Breaking changes`. Treat API, data, serialization, DOM, workflow, and other observable compatibility changes as breaking changes; "no API changes" does not mean "no breaking changes." If there are none, put exactly `N/A` under the heading.
+- Omit other empty sections. Do not add `None` or boilerplate checklists.
+
+### Diff-to-description pass
+
+Before drafting, build a private claim-to-evidence map. Do not show it unless the user asks.
+
+1. **Find the before/after thesis.** Locate the removed or bypassed mechanism and the replacement path. A new module alone does not prove that the system now uses it; trace its callers and integration points.
+2. **Extract outcomes.** Read implementation, behavior tests, docs, schemas, generated output, and configuration. Translate mechanics into reviewer-relevant correctness, UX, operability, or performance effects.
+3. **Group by concept.** Collapse related hunks into a few coherent systems such as parsing, caching, persistence, request flow, or editor behavior. Do not mirror the file tree.
+4. **Scan compatibility surfaces.** Look for changed APIs, stored bytes, data shape, rendering/DOM, defaults, keyboard or workflow behavior, migrations, and removed fallback paths.
+5. **Ground every claim.** Each material sentence must map to a diff hunk, test, generated artifact, or explicit user-provided context. Commits can explain intent, but they do not override the final diff.
+6. **Check coverage and proportion.** Include every material reviewer-visible change, omit mechanical churn, and spend the most prose on the highest-impact or least-obvious parts of the diff.
+
+If a motivation, benchmark, or risk claim is not supported by the branch or user context, ask the user, qualify it, or omit it. Never invent performance numbers, incidents, customer impact, or test results.
+
+### Voice and sentence construction
+
+- Write direct, compressed technical prose. Prefer "This replaces X with Y" over "This PR refactors X."
+- Use causal structure: **mechanism → consequence**. Explain why a detail matters instead of merely naming it.
+- Start bullets with an outcome or a strong concept label. A useful pattern is `<concept> — <implementation>, so <result>`.
+- Use exact terms from the code and concrete examples in backticks when they clarify changed behavior.
+- Contrast old and new behavior explicitly when that helps review.
+- Calibrate risk language: use `may`, `expect`, or a scoped warning when impact depends on existing input or downstream assumptions.
+- Be specific without narrating every hunk. Avoid marketing language, generic praise, filler, and changelog-style per-commit summaries.
+- Do not hard-wrap the body. GitHub renders Markdown and wraps it for the reader.
 
 ---
 
@@ -87,12 +116,14 @@ test(auth/session): cover token refresh edge cases
 Run in parallel:
 
 1. **Current branch and remote state**:
+
    ```bash
    git branch --show-current
    git log --oneline @{upstream}..HEAD 2>/dev/null  # unpushed commits
    ```
 
 2. **Detect the default branch**:
+
    ```bash
    git remote show origin | sed -n 's/.*HEAD branch: //p'
    ```
@@ -111,11 +142,13 @@ If there are unpushed commits, tell the user and ask if they want to push first.
 Run these against the default branch:
 
 1. **Commits on this branch**:
+
    ```bash
    git log --oneline <default>..HEAD
    ```
 
 2. **Full diff**:
+
    ```bash
    git diff <default>...HEAD
    ```
@@ -125,7 +158,7 @@ Run these against the default branch:
    git diff --stat <default>...HEAD
    ```
 
-Read changed files where the diff alone doesn't tell the full story. Understand the intent, not just the mechanics.
+Do not draft from truncated diff output. For a large changeset, save the complete diff to a temporary file and inspect it in chunks or per path. Read changed files where the patch lacks surrounding context. Read tests and docs as behavioral evidence, not as an afterthought. Understand the final system and its intent, not just the mechanics.
 
 ## Step 3: Analyze
 
@@ -133,10 +166,13 @@ Determine:
 
 - **Type**: Is this a feat, fix, refactor, chore, docs, or test?
 - **Scope**: What system area does this touch? If monorepo, identify the package.
-- **Primary intent**: What problem does this solve?
-- **Key changes**: The 3-5 most important behavioral changes.
-- **Breaking changes**: Does this break any existing behavior, API, or contract?
-- **Risk**: What's non-obvious or could go wrong?
+- **Before/after thesis**: What mechanism or behavior existed before, and what replaces or changes it?
+- **Outcomes**: What does the new behavior buy in correctness, UX, performance, maintenance, or operations?
+- **Implementation concepts**: Which coherent subsystems explain the change better than a file list?
+- **Compatibility**: What API, data, serialization, rendering, default, or workflow behavior changes?
+- **Risk and evidence**: What's non-obvious, what could go wrong, and which hunks or tests support each claim?
+
+Build the private claim-to-evidence map described above before drafting. If the diff cannot establish the motivation or intended compatibility contract, ask the user instead of guessing.
 
 ## Step 4: Draft
 
@@ -180,6 +216,5 @@ Report the PR URL.
 
 - **No changes on branch**: If `git diff <default>...HEAD` is empty, tell the user.
 - **Unpushed commits**: Prompt to push before creating. GitHub can't see unpushed work.
-- **PR already exists**: Direct to `/rc-pr-update`.
 - **Multiple concerns**: Flag it. Suggest splitting if appropriate, but draft the best single PR you can.
 - **Scope ambiguity**: If you can't determine a clear scope, ask the user rather than guessing.

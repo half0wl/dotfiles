@@ -1,15 +1,14 @@
 {
-  "lastChangelogVersion": "0.74.0",
+  "lastChangelogVersion": "0.84.2",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "low",
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "max",
   "enableInstallTelemetry": false,
   "theme": "Railway",
   "packages": [
     "npm:pi-web-access",
     "npm:pi-mcp-adapter",
     "npm:pi-playwright",
-    "npm:pi-subagents",
     "npm:pi-ask-user"
   ],
   "steeringMode": "one-at-a-time",
