@@ -247,6 +247,13 @@ manually by running the following command in your terminal:
 find ~/.local/share/nvim -name "*.so" | while read lib; do sudo codesign --force --sign - "$lib"; done
 ```
 
+### Lower menubar icon padding
+
+```sh
+defaults -currentHost write -globalDomain NSStatusItemSpacing -int 2
+defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 2
+```
+
 ## License
 
 [MIT](./LICENSE)
