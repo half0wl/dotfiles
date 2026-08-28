@@ -85,12 +85,19 @@ question as approval.
    branch (`main`/`master`/`trunk`), in which case create a branch named
    from the plan's subject slug before any edit. Never implement on the
    default branch, and never branch away from a branch Ray already chose.
-2. **Announce.** Run `ListAgents`. For every other agent that could be
+2. **Handshake.** Run `ListAgents`. For every other agent that could be
    working in this repo (another local session, a teammate agent, a cloud
-   session), `SendMessage` a short announcement: this pipeline is
-   implementing <plan subject> on <branch>, expects to touch <file list from
-   the plan>, and will ask again before refactoring the whole branch. No
-   other agents listed → skip silently, don't manufacture ceremony.
+   session), `SendMessage` a short announcement-plus-question: this pipeline
+   is implementing <plan subject> on <branch>, expects to touch <file list
+   from the plan>, will ask again before refactoring the whole branch — and
+   which files, if any, is that agent touching on this branch? Then:
+   - **Overlap** between a reply's file list and the plan's → escalate to
+     Ray before editing anything. Two agents writing the same files is his
+     call to sequence, not a race to lose.
+   - **No reply** doesn't block implement (the hard block is the Stage 4
+     barrier) — note the silence in the roster and lean on the passive git
+     checks; a cloud session can't reply at all, so treat its row the same.
+   - No other agents listed → skip silently, don't manufacture ceremony.
 3. **Record state.** Append a `## Pipeline` section to the plan file and
    keep it current at every transition from here on:
 
@@ -124,10 +131,13 @@ Execute the plan's Implementation steps in order.
 - **Verify as you go.** Run the plan's Verification section. Failures in
   pipeline-written code get fixed now; pre-existing failures get flagged in
   the report, not fixed.
-- **Absorb the branch moving.** At each boundary within this stage, re-check
-  `git status` and `git log` against the recorded baseline. Foreign commits:
-  rebase onto them. A conflict between foreign work and pipeline work: stop
-  and escalate to Ray — merge decisions are his.
+- **Absorb the branch moving.** At each boundary within this stage: `git
+  fetch` (when the branch has an upstream), then re-check `git status` and
+  `git log` against the recorded baseline, including whether the remote is
+  ahead (`git rev-list --count HEAD..@{upstream}`) — an agent on another
+  machine shows up only this way. Foreign commits, local or fetched: rebase
+  onto them. A conflict between foreign work and pipeline work: stop and
+  escalate to Ray — merge decisions are his.
 - **Keep the plan honest.** Direction changes, discovered constraints, and
   Ray's mid-flight follow-ups (he sends them; adapt) all get folded into the
   plan file as they happen.
@@ -142,9 +152,12 @@ on this branch has communicated it is done.
    <branch> in <repo>? If yes: reply DONE when its work is committed and
    stable, because a whole-branch refactor and adversarial review are about
    to run.
-2. The barrier clears when **every** agent working on the branch has replied
-   DONE (or said it isn't on this branch), **and** `git status` shows no
-   uncommitted work this pipeline didn't write.
+2. The barrier clears only when all three hold: **every** agent working on
+   the branch has replied DONE (or said it isn't on this branch); `git
+   status` shows no uncommitted work this pipeline didn't write; and after a
+   `git fetch`, the branch is not behind its upstream — unpulled foreign
+   commits mean someone elsewhere isn't done. (No upstream → the fetch check
+   is moot; say so in the roster log.)
 3. **Never proceed past a silent agent.** Re-check periodically; after ~10
    minutes without a reply, escalate to Ray with the roster and each agent's
    status. He decides whether to wait or waive.
@@ -159,8 +172,9 @@ on this branch has communicated it is done.
 Log the roster and outcome in the `## Pipeline` section. Known blind spot,
 state it rather than over-trusting an empty roster: ListAgents only sees
 Claude agents. A Codex CLI session, another tool, or a human on the branch
-is invisible until their changes appear in git — which is why the
-git-status check in step 2 is part of the barrier, not decoration.
+is invisible until their changes appear in git — which is why step 2's git
+checks (working tree plus fetched remote) are part of the barrier, not
+decoration.
 
 ## Stage 5: Refactor
 
@@ -177,8 +191,8 @@ Skipped cleanly if Ray said `skip review` (mark it in the state section; the
 final report then carries no confidence score). Otherwise:
 
 1. **Barrier re-check** — refactor and review are one critical section, but
-   time has passed: re-run `ListAgents` and the git-status check. A new
-   agent on the branch re-arms the full Stage 4 barrier.
+   time has passed: re-run `ListAgents` and Stage 4 step 2's git checks
+   (status + fetch). A new agent on the branch re-arms the full barrier.
 2. Invoke `Skill(rc-adversarial-review)`, passing `skip codex` through if
    Ray gave it. The skill runs as written: both tracks, verification of
    every finding, the fix loop until confidence ≥ 9 or a cap applies, and
