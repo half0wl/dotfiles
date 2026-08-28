@@ -79,9 +79,12 @@ question as approval.
 
 ## Stage 2: Branch + Announce
 
-1. **Branch discipline.** On the default branch (`main`/`master`/`trunk`)?
-   Create a branch named from the plan's subject slug before any edit. Never
-   implement on the default branch.
+1. **Branch discipline.** Already on a feature branch? Stay on it — that is
+   the normal case, especially when sharing the branch with other agents.
+   Branching happens in exactly one situation: the session is on the default
+   branch (`main`/`master`/`trunk`), in which case create a branch named
+   from the plan's subject slug before any edit. Never implement on the
+   default branch, and never branch away from a branch Ray already chose.
 2. **Announce.** Run `ListAgents`. For every other agent that could be
    working in this repo (another local session, a teammate agent, a cloud
    session), `SendMessage` a short announcement: this pipeline is

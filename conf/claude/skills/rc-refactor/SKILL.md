@@ -1,7 +1,7 @@
 ---
 name: rc-refactor
-description: Consolidation refactor of the current branch's diff against main. Finds repeated literals, magic numbers, duplicated logic, inline type shapes, and copy-pasted config across the branch's changed files, then extracts them into named constants, pure helpers, and shared types. Presents the full candidate list for approval before touching anything; preserves behavior exactly. Use when Ray asks to refactor for consolidation, dedupe the branch, extract constants/helpers, or clean up duplication before review.
-allowed-tools: Read, Glob, Grep, Bash, Edit, Write
+description: Consolidation refactor of the current branch's diff against main. Finds repeated literals, magic numbers, duplicated logic, inline type shapes, and copy-pasted config across the branch's changed files, then extracts them into named constants, pure helpers, and shared types. Presents the full candidate list for approval before touching anything; preserves behavior exactly. Finishes by syncing the project's CLAUDE.md and ARCHITECTURE.md to the refactored code — source code is the truth. Use when Ray asks to refactor for consolidation, dedupe the branch, extract constants/helpers, or clean up duplication before review.
+allowed-tools: Read, Glob, Grep, Bash, Edit, Write, ListAgents, SendMessage
 ---
 
 # Consolidation Refactor
@@ -24,15 +24,36 @@ trust.
    named differently (`master`, `trunk`), use that and note it.
 3. Get the file list: `git diff main...HEAD --name-only`. Empty list →
    stop, nothing to do.
-4. Note the state of the working tree. Uncommitted changes are fine, but
-   the refactor commits must contain only extraction work — never sweep
-   pre-existing dirt into them.
+4. Note the state of the working tree. Uncommitted changes are fine —
+   they may be another agent's work in progress — but the refactor
+   commits must contain only extraction work; never sweep them in.
 
 ## Scope
 
 Only files changed on this branch. Do not touch files outside the diff
 unless extracting a shared constant/helper requires creating a new file or
 adding to an existing shared module.
+
+## Concurrent Agents
+
+Other agents may be working on this branch at the same time. Assume the
+tree can shift between any two steps; coordinate instead of colliding.
+
+- At preflight, check ListAgents for other active sessions. If any look
+  like they're on this repo, message them (SendMessage) with the files you
+  plan to touch and ask what they have in flight. Hold off on contested
+  files until you've heard back or Ray says to proceed.
+- Stage surgically: `git add <specific files>` only — never `git add -A`,
+  `git add .`, or `git commit -a`. Another agent's half-finished work must
+  not ride along in an extraction commit.
+- Re-read each file immediately before editing it. If it changed since
+  candidate enumeration, re-verify the extraction still applies; if it no
+  longer does, drop the candidate and note it — don't force it.
+- If new commits land mid-refactor, re-run the diff and reassess. Never
+  reset, amend, or force-push — that rewrites history another agent may
+  be building on.
+- On an edit conflict (file changed underneath you), reapply your change
+  on top of their version. Never clobber their edit to make yours land.
 
 ## What to Look For
 
@@ -78,7 +99,18 @@ adding to an existing shared module.
    what survives.
 2. **Refactor.** Apply the approved extractions, grouped into logical
    commits with clear messages.
-3. **Verify — only when Ray says to.** Do not run typecheck or the test
+3. **Sync docs.** After the extractions land, check the project's
+   `CLAUDE.md` and `ARCHITECTURE.md` (repo root and any affected package
+   directories) for content the refactor invalidated — file paths, module
+   names, constants or helpers described by their old location, patterns
+   the docs narrate that the code no longer follows. Source code is the
+   truth: update the docs to describe the code as it now is; never bend
+   the refactor to match stale docs. Scope is strictly what this refactor
+   invalidated — no drive-by rewrites, no fixing unrelated staleness
+   (flag it in the summary instead). If a doc doesn't exist, skip it;
+   don't create one. Commit doc updates as their own commit so the
+   extraction commits stay pure.
+4. **Verify — only when Ray says to.** Do not run typecheck or the test
    suite on your own; Ray triggers verification explicitly. After
    refactoring, report the work as **unverified** and name the commands
    you'd run (discover the project's own — package.json scripts,
@@ -95,8 +127,10 @@ adding to an existing shared module.
    files changed on the branch remain fair game for approved
    consolidation — the prohibition is on editing them in response to a
    failure.)
-4. **Summarize:** what was extracted, where it lives now, what you
-   deliberately left alone and why, and the verification status — either
-   the results (exact commands and outcomes, including any pre-existing
-   failures flagged) or a clear "unverified, awaiting go-ahead" with the
-   commands ready to run.
+5. **Summarize:** what was extracted, where it lives now, what you
+   deliberately left alone and why, which doc sections were synced (or
+   "docs untouched — nothing referenced the changed code", plus any
+   unrelated staleness spotted but left alone), and the verification
+   status — either the results (exact commands and outcomes, including
+   any pre-existing failures flagged) or a clear "unverified, awaiting
+   go-ahead" with the commands ready to run.
