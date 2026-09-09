@@ -19,7 +19,14 @@ POLL_SECS=10     # cadence inside wait loops
 
 die() { echo "rc-coord: $*" >&2; exit 1; }
 now() { date +%s; }
-mtime() { stat -f %m "$1" 2>/dev/null || echo 0; }
+# GNU stat first (-c %Y), BSD fallback (-f %m). Order matters: GNU stat
+# treats `-f %m <file>` as a filesystem query and prints `File: "..."` to
+# STDOUT, which detonates in $((...)) as an unbound variable — so probing
+# BSD syntax first is not safe on machines where nix coreutils shadows
+# /usr/bin/stat.
+mtime() {
+  stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || echo 0
+}
 
 repo_key() {
   local common base h
@@ -66,10 +73,17 @@ branch_holder() { cut -d' ' -f1 "$LD/branch.lock" 2>/dev/null || true; }
 # Walk up from this shell to the claude CLI process, so the heartbeat can
 # die with the session instead of surviving as an orphan.
 find_claude_pid() {
+  # Match a command that IS the claude CLI (argv[0] "claude", bare or
+  # pathed), never one that merely mentions it: the Bash tool's own shell
+  # sources ~/.claude/shell-snapshots/... , so a substring match anchors
+  # the heartbeat to that ephemeral per-call shell and it dies with the
+  # first tool call — which silently stales the session's claims.
   local pid=$$ cmd
   while [ "$pid" -gt 1 ]; do
     cmd=$(ps -o command= -p "$pid" 2>/dev/null) || return 1
-    case "$cmd" in *claude*) echo "$pid"; return 0 ;; esac
+    case "$cmd" in
+      claude|claude\ *|*/claude|*/claude\ *) echo "$pid"; return 0 ;;
+    esac
     pid=$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ') || return 1
     [ -n "$pid" ] || return 1
   done
@@ -138,7 +152,10 @@ cmd_stage() { # <sid> <stage>
   local sid="$1" st="$2"
   local f="$LD/$sid.claim"
   [ -f "$f" ] || die "stage: no claim for $sid"
-  sed -i '' "s/^stage=.*/stage=$st/" "$f"
+  # Temp-file rewrite instead of sed -i: BSD sed wants `-i ''`, GNU sed
+  # reads that '' as the script — unportable in both directions on machines
+  # where nix coreutils shadows the BSD tools (same trap as mtime's stat).
+  sed "s/^stage=.*/stage=$st/" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
   echo "$sid stage=$st"
 }
 

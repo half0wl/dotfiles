@@ -1,6 +1,6 @@
 ---
 name: rc-adversarial-review
-description: Combined adversarial review — a parallel Claude review swarm covering every dimension (correctness, security, architecture, CLAUDE.md compliance, types, error handling, edge cases, performance, testing) plus an adversarial debate with the OpenAI Codex CLI (gpt-5.6-sol at ultra reasoning, up to 3 rounds), run concurrently under ultracode and converged into one verified report. Every finding is checked against evidence, cross-examined between models, then conceded, refuted, or carried as an open question; confirmed issues get fixed until confidence reaches 9+. The converged report is saved as a plan in ~/.claude/plans/ following rc-plan conventions. Use when Ray asks for an adversarial review, a full review, or a combined review + codex debate; "skip codex" runs the swarm track only.
+description: Combined adversarial review — a parallel Claude review swarm covering every dimension (correctness, security, architecture, CLAUDE.md compliance, types, error handling, edge cases, performance, testing) plus an adversarial debate with the OpenAI Codex CLI (gpt-6-astra at ultra reasoning, up to 3 rounds), run concurrently under ultracode and converged into one verified report. Every finding is checked against evidence, cross-examined between models, then conceded, refuted, or carried as an open question; confirmed issues get fixed until confidence reaches 9+. The converged report is saved as a plan in ~/.claude/plans/ following rc-plan conventions. Use when Ray asks for an adversarial review, a full review, or a combined review + codex debate; "skip codex" runs the swarm track only.
 allowed-tools: Read, Glob, Grep, Bash, LSP, Edit, Write, Agent, Workflow, ListAgents, SendMessage
 ---
 
@@ -8,7 +8,7 @@ allowed-tools: Read, Glob, Grep, Bash, LSP, Edit, Write, Agent, Workflow, ListAg
 
 Two hostile tracks attack the work product at the same time:
 
-- **Track A — Codex**: `gpt-5.6-sol` at ultra reasoning effort, debating you
+- **Track A — Codex**: `gpt-6-astra` at ultra reasoning effort, debating you
   across up to 3 rounds in a single Codex session.
 - **Track B — Claude swarm**: one reviewer agent per review dimension, fanned
   out in a workflow, with every finding adversarially verified by a second
@@ -226,7 +226,7 @@ lives outside a git repo). Run it as background Bash so the swarm launches
 in the same turn:
 
 ```bash
-codex exec -m gpt-5.6-sol -c model_reasoning_effort="ultra" -s read-only \
+codex exec -m gpt-6-astra -c model_reasoning_effort="ultra" -s read-only \
   --json -o "$SCRATCH/codex-r1.md" - < "$SCRATCH/prompt-r1.md" \
   >| "$SCRATCH/codex-r1.jsonl"
 ```
@@ -391,7 +391,7 @@ it). Same background execution and the same success gate as round 1:
 
 ```bash
 codex exec -s read-only resume "$(cat "$SCRATCH/thread-id")" \
-  -m gpt-5.6-sol -c model_reasoning_effort="ultra" \
+  -m gpt-6-astra -c model_reasoning_effort="ultra" \
   --json -o "$SCRATCH/codex-r2.md" - < "$SCRATCH/reply-r1.md" \
   >| "$SCRATCH/codex-r2.jsonl"
 ```
@@ -446,7 +446,7 @@ the report says exactly why).
 ## Adversarial Review: {target}
 
 Tracks: swarm ({N} reviewers, {M} verifiers) + Codex ({R} of 3 rounds,
-gpt-5.6-sol @ ultra, session {thread id})
+gpt-6-astra @ ultra, session {thread id})
 {or: swarm only — Codex skipped on request / CLI unavailable / Codex track
 incomplete: {why}}
 Snapshot: {pinned sha}{ — N commits landed post-snapshot, unreviewed}
