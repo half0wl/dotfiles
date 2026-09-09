@@ -6,3 +6,6 @@ font-size = 18
 window-padding-x = 15
 window-padding-y = 10
 background = #10161A
+
+# Play an alert sound and draw attention when a terminal bell arrives.
+bell-features = system,attention,title
