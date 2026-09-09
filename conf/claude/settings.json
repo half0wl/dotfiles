@@ -195,7 +195,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5[1m]",
+  "model": "claude-fable-5-1[1m]",
   "enableAllProjectMcpServers": false,
   "statusLine": {
     "type": "command",
@@ -214,6 +214,7 @@
       }
     }
   },
+  "feedbackDrafts": "off",
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "ultracode": true,
@@ -223,4 +224,11 @@
   "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true,
   "fastMode": true
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
+  "agentPushNotifEnabled": true,
+  "inputNeededNotifEnabled": true
 }
