@@ -1,1 +1,4 @@
 .DS_Store
+**/conf/claude/skills/synced/**
+**/conf/claude/skills/use-railway/**
+
