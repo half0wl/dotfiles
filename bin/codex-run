@@ -1,0 +1,83 @@
+#!/bin/bash
+# Run `codex` outside Claude Code's Bash sandbox for the review skills.
+#
+# Claude Code exempts a command from the sandbox only when its command line is
+# bare: a redirect, a pipe, a `VAR=` prefix or a `$(...)` pulls it back inside,
+# where codex (installed under ~/.nvm) cannot even launch. This wrapper owns the
+# redirects and the thread-id lookup so the caller's command line stays bare.
+#
+# Usage: codex-run STDIN_FILE STDOUT_FILE CODEX_ARGS...
+#   Runs `codex CODEX_ARGS... < STDIN_FILE > STDOUT_FILE` and exits with
+#   codex's status. A CODEX_ARG of the form @file:PATH is replaced by the first
+#   line of PATH (for `resume @file:<scratch>/thread-id`).
+#
+# Every file it reads or writes (STDIN_FILE, STDOUT_FILE, @file paths and the
+# -o / --output-last-message target) must sit under the Claude session temp
+# root, so the sandbox exemption cannot read or write anywhere else.
+set -euo pipefail
+
+readonly ROOT="/private/tmp/claude-501"
+
+die() {
+  echo "codex-run: $*" >&2
+  exit 64
+}
+
+# Succeeds when the path is not a symlink and its directory resolves under ROOT.
+under_root() {
+  local path=$1 dir
+  [ -L "$path" ] && return 1
+  dir=$(cd "$(dirname "$path")" 2>/dev/null && pwd -P) || return 1
+  case "$dir/" in
+    "$ROOT"/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+[ "$#" -ge 3 ] || die "usage: codex-run STDIN_FILE STDOUT_FILE CODEX_ARGS..."
+stdin_file=$1
+stdout_file=$2
+shift 2
+
+under_root "$stdin_file" || die "stdin file must be under $ROOT: $stdin_file"
+[ -f "$stdin_file" ] || die "stdin file not found: $stdin_file"
+under_root "$stdout_file" || die "stdout file must be under $ROOT: $stdout_file"
+
+args=()
+expect_output_path=0
+for arg in "$@"; do
+  if [ "$expect_output_path" -eq 1 ]; then
+    under_root "$arg" || die "-o target must be under $ROOT: $arg"
+    expect_output_path=0
+    args+=("$arg")
+    continue
+  fi
+  case "$arg" in
+    -o | --output-last-message)
+      expect_output_path=1
+      args+=("$arg")
+      ;;
+    --output-last-message=*)
+      under_root "${arg#*=}" || die "-o target must be under $ROOT: ${arg#*=}"
+      args+=("$arg")
+      ;;
+    -o?*)
+      under_root "${arg#-o}" || die "-o target must be under $ROOT: ${arg#-o}"
+      args+=("$arg")
+      ;;
+    @file:*)
+      ref=${arg#@file:}
+      under_root "$ref" || die "@file path must be under $ROOT: $ref"
+      [ -f "$ref" ] || die "@file not found: $ref"
+      value=$(head -n 1 "$ref")
+      [ -n "$value" ] || die "@file is empty: $ref"
+      args+=("$value")
+      ;;
+    *)
+      args+=("$arg")
+      ;;
+  esac
+done
+[ "$expect_output_path" -eq 0 ] || die "-o needs a path"
+
+exec codex "${args[@]}" < "$stdin_file" > "$stdout_file"

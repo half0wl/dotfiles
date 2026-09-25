@@ -125,7 +125,7 @@ Where:
 - **subject** — a short kebab-case slug you pick that names the work
   (e.g. `replica-skip`, `webhook-retries`). Distinctive over generic:
   `fix-bug` never; the thing being fixed, always. Plans that record a
-  review rather than upcoming work (e.g. saved by rc-adversarial-review)
+  review rather than upcoming work (e.g. saved by rc-review)
   prefix the subject with `review-`: `review-webhook-retries`.
 
 If a plan for this same work already exists, update it in place — don't
@@ -193,7 +193,7 @@ no `any`, clean architecture boundaries). Implementation steps must comply
 by construction. If the right approach genuinely requires breaking a rule,
 the plan names the rule, quotes it, and carries the conflict as an open
 question for Ray — never a silent violation buried in the steps.
-rc-adversarial-review attacks the finished work with these same files; a
+rc-review attacks the finished work with these same files; a
 plan that ignores them is planning a failed review.
 
 Sizing: proportional to the work. A one-file bug fix gets a one-screen

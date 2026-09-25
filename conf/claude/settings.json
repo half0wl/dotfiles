@@ -1,4 +1,9 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
   "permissions": {
     "allow": [
       "Bash(ls:*)",
@@ -67,48 +72,6 @@
       "Bash(git name-rev:*)",
       "Bash(git symbolic-ref:*)",
       "Bash(git for-each-ref:*)",
-      "Bash(cd * && ls:*)",
-      "Bash(cd * && cat:*)",
-      "Bash(cd * && rg:*)",
-      "Bash(cd * && grep:*)",
-      "Bash(cd * && find:*)",
-      "Bash(cd * && wc:*)",
-      "Bash(cd * && file:*)",
-      "Bash(cd * && stat:*)",
-      "Bash(cd * && head:*)",
-      "Bash(cd * && tail:*)",
-      "Bash(cd * && md5:*)",
-      "Bash(cd * && shasum:*)",
-      "Bash(cd * && tree:*)",
-      "Bash(cd * && jq:*)",
-      "Bash(cd * && yq:*)",
-      "Bash(cd * && xargs:*)",
-      "Bash(cd * && git status:*)",
-      "Bash(cd * && git log:*)",
-      "Bash(cd * && git diff:*)",
-      "Bash(cd * && git show:*)",
-      "Bash(cd * && git branch:*)",
-      "Bash(cd * && git tag:*)",
-      "Bash(cd * && git remote:*)",
-      "Bash(cd * && git fetch:*)",
-      "Bash(cd * && git ls-files:*)",
-      "Bash(cd * && git ls-tree:*)",
-      "Bash(cd * && git ls-remote:*)",
-      "Bash(cd * && git rev-parse:*)",
-      "Bash(cd * && git rev-list:*)",
-      "Bash(cd * && git config --get:*)",
-      "Bash(cd * && git config --list:*)",
-      "Bash(cd * && git config -l:*)",
-      "Bash(cd * && git blame:*)",
-      "Bash(cd * && git shortlog:*)",
-      "Bash(cd * && git describe:*)",
-      "Bash(cd * && git check-ignore:*)",
-      "Bash(cd * && git stash list:*)",
-      "Bash(cd * && git reflog:*)",
-      "Bash(cd * && git cat-file:*)",
-      "Bash(cd * && git name-rev:*)",
-      "Bash(cd * && git symbolic-ref:*)",
-      "Bash(cd * && git for-each-ref:*)",
       "Bash(npx tsx:*)",
       "Bash(npx tsc:*)",
       "Bash(npx biome:*)",
@@ -171,13 +134,6 @@
       "Bash(gh run view:*)",
       "Bash(gh issue list:*)",
       "Bash(gh issue view:*)",
-      "Bash(cd * && gh pr list:*)",
-      "Bash(cd * && gh pr list --head \"$(git branch --show-current)\":*)",
-      "Bash(cd * && gh pr view:*)",
-      "Bash(cd * && gh pr checks:*)",
-      "Bash(cd * && gh run view:*)",
-      "Bash(cd * && gh issue list:*)",
-      "Bash(cd * && gh issue view:*)",
       "WebSearch",
       "WebFetch",
       "Read(~/.claude/plans/*)",
@@ -193,10 +149,64 @@
       "mcp__playwright__browser_wait_for",
       "mcp__playwright__browser_type"
     ],
-    "defaultMode": "auto"
+    "deny": [
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.config/**)",
+      "Read(~/.docker/**)",
+      "Read(~/.kube/**)",
+      "Read(~/.railway/**)",
+      "Read(~/.raildev/**)",
+      "Read(~/.codex/**)",
+      "Read(~/Library/**)",
+      "Read(~/Desktop/**)",
+      "Read(~/Downloads/**)",
+      "Read(~/.git-credentials)",
+      "Read(~/.netrc)",
+      "Read(~/.npmrc)",
+      "Read(~/.claude.json)",
+      "Read(~/.zsh_history)",
+      "Read(~/.bash_history)",
+      "Read(~/dotfiles/.git/**)",
+      "Edit(~/dotfiles/.git/**)"
+    ],
+    "defaultMode": "auto",
+    "additionalDirectories": [
+      "/Users/rc/Workspace",
+      "/Users/rc/.claude/plans",
+      "/Users/rc/.claude/projects",
+      "/private/tmp/claude-501",
+      "/Users/rc/dotfiles",
+      "/Users/rc/Documents/Yggdrasil"
+    ]
   },
-  "model": "claude-fable-5-1[1m]",
+  "model": "opus",
   "enableAllProjectMcpServers": false,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Grep|Glob|Edit|MultiEdit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/zsh /Users/rc/dotfiles/conf/claude/hooks/documents-fence.zsh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/zsh /Users/rc/dotfiles/conf/claude/hooks/dotfiles-git-fence.zsh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
@@ -204,7 +214,8 @@
   },
   "enabledPlugins": {
     "frontend-design@claude-code-plugins": false,
-    "feature-dev@claude-code-plugins": true
+    "feature-dev@claude-code-plugins": true,
+    "i-have-adhd@i-have-adhd": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
@@ -212,7 +223,75 @@
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
       }
+    },
+    "i-have-adhd": {
+      "source": {
+        "source": "github",
+        "repo": "ayghri/i-have-adhd"
+      }
     }
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "allowUnsandboxedCommands": false,
+    "network": {
+      "allowedDomains": [
+        "registry.npmjs.org",
+        "registry.tiptap.dev"
+      ]
+    },
+    "filesystem": {
+      "allowWrite": [
+        "~/Library/pnpm",
+        "~/Library/Caches/pnpm",
+        "~/Documents/Yggdrasil"
+      ],
+      "denyWrite": [
+        "~/dotfiles/.git"
+      ],
+      "denyRead": [
+        "~/",
+        "/Users",
+        "/Volumes",
+        "~/dotfiles/.git"
+      ],
+      "allowRead": [
+        "~/Workspace",
+        "~/.gitconfig",
+        "~/dotfiles/conf/.gitconfig",
+        "~/.gitignore_global",
+        "~/dotfiles/conf/.gitignore_global",
+        "~/.config/git/hooks",
+        "~/dotfiles/conf/git/hooks",
+        "~/.claude/plans",
+        "~/.claude/projects",
+        "~/.claude/shell-snapshots",
+        "~/.claude/skills",
+        "~/dotfiles/conf/claude/skills",
+        "~/Library/pnpm",
+        "~/go",
+        "~/dotfiles",
+        "~/.npmrc",
+        "~/Library/Preferences/pnpm",
+        "~/Library/Caches/pnpm",
+        "~/Documents/Yggdrasil"
+      ]
+    },
+    "excludedCommands": [
+      "raildev *",
+      "railway *",
+      "docker *",
+      "gh *",
+      "git push *",
+      "git fetch *",
+      "git pull *",
+      "codex *",
+      "/Users/rc/dotfiles/bin/codex-run *",
+      "ps *",
+      "top *",
+      "pgrep *"
+    ]
   },
   "feedbackDrafts": "off",
   "alwaysThinkingEnabled": true,
@@ -222,13 +301,21 @@
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
-  "skipAutoPermissionPrompt": true,
-  "fastMode": true
-  "attribution": {
-    "commit": "",
-    "pr": "",
-    "sessionUrl": false
-  },
+  "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
-  "inputNeededNotifEnabled": true
+  "skipAutoPermissionPrompt": true,
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(raildev run_cmd:*)",
+      "Bash(railway logs:*)",
+      "Bash(pnpm turbo run typecheck:*)",
+      "Bash(pnpm turbo run lint:*)"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Bash(railway link:*)",
+      "Bash(psql:*) when targeting prod database connection strings"
+    ]
+  }
 }
