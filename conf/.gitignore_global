@@ -15,3 +15,5 @@ __pycache__/
 
 .playwright-cli/
 **/.playwright-cli/
+
+**/.claude/.cc-writes/
