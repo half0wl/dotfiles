@@ -205,6 +205,18 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/zsh /Users/rc/dotfiles/conf/claude/hooks/turn-done.zsh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -301,6 +313,7 @@
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
+  "preferredNotifChannel": "iterm2_with_bell",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
