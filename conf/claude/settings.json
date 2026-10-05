@@ -291,18 +291,22 @@
       ]
     },
     "excludedCommands": [
-      "raildev *",
-      "railway *",
+      "/Users/rc/dotfiles/bin/codex-run *",
+      "codex *",
       "docker *",
       "gh *",
-      "git push *",
+      "git add *",
+      "git checkout *",
+      "git commit *",
       "git fetch *",
+      "git merge *",
       "git pull *",
-      "codex *",
-      "/Users/rc/dotfiles/bin/codex-run *",
+      "git push *",
+      "pgrep *",
       "ps *",
-      "top *",
-      "pgrep *"
+      "raildev *",
+      "railway *",
+      "top *"
     ]
   },
   "feedbackDrafts": "off",
