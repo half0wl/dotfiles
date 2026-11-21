@@ -1,0 +1,166 @@
+# ========================================================================== #
+# .zshrc for Linux/Debian+KDE                                                #
+# https://github.com/half0wl/dotfiles                                        #
+# ========================================================================== #
+
+# Environment
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export TERM=xterm-256color
+export EDITOR='nvim'
+export SUDO_EDITOR="$HOME/.local/share/mise/installs/neovim/latest/bin/nvim"
+export VISUAL="$EDITOR"
+export PAGER='less'
+export LESS='-g -i -M -R -S -w -z-4'
+typeset -U path  # ensure no duplicate PATH entries
+path=("$HOME/.local/bin" $path)
+eval "$(~/.local/bin/mise activate zsh)"  # mise-managed tools on PATH
+
+# Options
+
+## Directories
+setopt auto_cd  # `dir` alone cds into it
+setopt auto_pushd pushd_ignore_dups pushd_silent
+setopt extended_glob
+unsetopt clobber  # `>` won't overwrite; use `>|`
+
+## Misc
+setopt interactive_comments  # allow # comments at the prompt
+setopt no_beep
+
+# History
+HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+mkdir -p "${HISTFILE:h}"
+HISTSIZE=10000
+SAVEHIST=10000
+setopt share_history  # share across sessions, write immediately
+setopt extended_history  # save timestamps
+setopt hist_ignore_all_dups hist_save_no_dups hist_find_no_dups
+setopt hist_ignore_space  # ` cmd` stays out of history
+setopt hist_reduce_blanks hist_verify
+
+# Completion
+autoload -Uz compinit
+compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zcompdump"
+setopt complete_in_word always_to_end
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+zstyle ':completion:*' hosts off  # disable hostname completion
+
+# Key bindings (emacs; keyd maps Cmd → Ctrl-layer, Option → Alt-layer)
+bindkey -e
+WORDCHARS=${WORDCHARS//[\/\-.]}      # word motions stop at / - .
+
+## Word & line movement
+bindkey '^[[1;5D' backward-word      # Option+←  (Ctrl+←)
+bindkey '^[[1;5C' forward-word       # Option+→  (Ctrl+→)
+bindkey '^[[3;5~' kill-word          # Option+Delete (Ctrl+Delete)
+bindkey '^H'      backward-kill-word # Option+Backspace (Ctrl+Backspace)
+bindkey '^[[H'    beginning-of-line  # Cmd+← (Home)
+bindkey '^[[F'    end-of-line        # Cmd+→ (End)
+bindkey '^[[3~'   delete-char        # Delete
+
+## History & completion
+bindkey '^[[A'    up-line-or-search  # ↑/↓ search history by typed prefix
+bindkey '^[[B'    down-line-or-search
+bindkey '^[[Z'    reverse-menu-complete  # Shift+Tab
+
+## Editor
+autoload -Uz edit-command-line && zle -N edit-command-line
+bindkey '^X^E' edit-command-line  # edit current command in $EDITOR
+
+# Colors & aliases
+autoload -Uz colors && colors
+(( $+commands[dircolors] )) && eval "$(dircolors -b)"
+alias ls='ls --color=auto --group-directories-first'
+alias ll='ls -lh'
+alias la='ls -lAh'
+alias grep='grep --color=auto'
+alias rm='rm -i' mv='mv -i' cp='cp -i'
+
+# PS1 Prompt 
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' unstagedstr '%F{red}*'
+zstyle ':vcs_info:git:*' stagedstr '%F{green}+'
+zstyle ':vcs_info:git:*' formats ' %F{magenta}%b%u%c%f'
+zstyle ':vcs_info:git:*' actionformats ' %F{magenta}%b%f|%F{yellow}%a%u%c%f'
+precmd() { vcs_info }
+setopt prompt_subst
+PROMPT='%F{blue}%~%f${vcs_info_msg_0_} $ '
+
+# Functions
+nvidia-kernel-check() {
+  local latest=$(ls /boot/vmlinuz-* | sort -V | tail -1 | sed 's|/boot/vmlinuz-||')
+  local use=$(df --output=pcent /boot | tail -1 | tr -dc 0-9)
+  (( use > 80 )) && print -P "%F{yellow}⚠ /boot is ${use}% full — remove an old kernel before the next update%f"
+  if ! /usr/sbin/modinfo -k "$latest" nvidia &>/dev/null; then
+    print -P "%F{red}⚠ No NVIDIA module for kernel $latest — don't reboot.%f"
+    print "  Fix: sudo apt install linux-headers-$latest && sudo dkms autoinstall -k $latest"
+    return 1
+  fi
+}
+
+upgrade-all() {
+  sudo apt update && sudo apt full-upgrade && sudo apt autoremove || return 1
+  sudo fwupdmgr refresh --force; sudo fwupdmgr update
+  nvidia-kernel-check || return 1
+  print -P "%F{green}✓ NVIDIA module present for newest kernel%f"
+  read -q "?Reboot now? [y/N] " && sudo systemctl reboot; echo
+}
+
+# Generate a random alphanumeric secret (default 64 chars).
+# Usage: gens [--length=N]
+gens() {
+  local len=64 arg
+  for arg in "$@"; do
+    case $arg in
+      --length=*) len=${arg#--length=} ;;
+      -h|--help)  print "usage: gens [--length=N]"; return 0 ;;
+      *)          print -u2 "gens: unknown argument: $arg"; return 1 ;;
+    esac
+  done
+  if [[ $len != <1-> ]]; then
+    print -u2 "gens: length must be a positive integer"
+    return 1
+  fi
+  LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c "$len"
+  if [[ -t 1 ]]; then print; fi  # trailing newline only when printing to a terminal
+}
+
+# Aliases
+alias c='clear'
+alias cw='cd ~/Workspace'
+alias opf='open .'
+alias reload='source ~/.zshrc'
+alias upall='upgrade-all'
+alias goodnight='dbus-send --session --print-reply --type=method_call --dest=org.kde.Shutdown /Shutdown org.kde.Shutdown.logout >/dev/null'
+alias reboot='systemctl reboot'
+alias goodbye='systemctl poweroff'
+alias mdprev='gh markdown-preview --markdown-mode README.md'
+
+# dsh -> Ollama-backed launcher (~/.dsh/ollama-dsh.sh). Launcher-level commands
+# (dsh plugin ..., dsh --help/--version, flags) go straight to the real dsh.
+dsh() {
+  case "${1-}" in
+    plugin|-*) command dsh "$@" ;;
+    *) ~/.dsh/ollama-dsh.sh "$@" ;;
+  esac
+}
+
+# Syntax highlighting. `source` this last. 
+# Requires: `sudo apt install zsh-syntax-highlighting`.
+for f in /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+         /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh; do
+  if [[ -r $f ]]; then
+    source "$f"
+    ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern line cursor root)
+    ZSH_HIGHLIGHT_PATTERNS+=('rm*-rf*' 'fg=white,bold,bg=red')
+    break
+  fi
+done
+unset f

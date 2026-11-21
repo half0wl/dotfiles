@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=keyd application mapper
+Exec=/usr/local/bin/keyd-application-mapper -d
+X-KDE-autostart-phase=2

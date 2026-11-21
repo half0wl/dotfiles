@@ -1,0 +1,10 @@
+// Keep every kernel ever installed. Symlinked from dotfiles/linux/conf by 02-system.sh.
+// linux-kbuild is kept too: DKMS needs it to rebuild modules for that kernel.
+APT::NeverAutoRemove {
+  "^linux-image-.*";
+  "^linux-headers-.*";
+  "^linux-kbuild-.*";
+};
+
+// unattended-upgrades removes unused kernels by default; turn that off.
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "false";

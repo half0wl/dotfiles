@@ -1,0 +1,16 @@
+[user]
+    name = Ray Chen
+    email = ray@raychen.io
+[core]
+    editor = nvim
+    excludesfile = ~/.gitignore_global
+    ignorecase = false
+    hooksPath = ~/.config/git/hooks
+[init]
+    defaultBranch = main
+[credential "https://github.com"]
+	helper = 
+	helper = !/home/ray/.local/share/mise/installs/gh/2.103.3/gh_2.103.3_linux_amd64/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/home/ray/.local/share/mise/installs/gh/2.103.3/gh_2.103.3_linux_amd64/bin/gh auth git-credential

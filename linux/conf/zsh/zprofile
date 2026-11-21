@@ -1,0 +1,7 @@
+emulate sh -c '. ~/.profile'
+
+# Start KDE Plasma after logging in on tty1. Other ttys stay plain shells.
+if [[ -z $WAYLAND_DISPLAY && -z $DISPLAY && $(tty) == /dev/tty1 ]]; then
+  exec /usr/lib/x86_64-linux-gnu/libexec/plasma-dbus-run-session-if-needed \
+    /usr/bin/startplasma-wayland
+fi

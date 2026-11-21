@@ -1,0 +1,6 @@
+# Follow `source` into _lib.sh.
+external-sources=true
+# `sh -c '... "$1" ...' _ arg` passes arguments on purpose.
+disable=SC2016
+# Resolve `source` paths relative to each script (they live in sh/).
+source-path=SCRIPTDIR
