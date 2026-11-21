@@ -170,6 +170,16 @@ install_flatpaks() {
   done
 }
 
+# Run a piped-from-curl installer with no controlling terminal: some
+# (pi) ask questions on /dev/tty, which the spinner would hide forever;
+# without a terminal they take their non-interactive defaults. mise's
+# shims go on PATH so installers find the node/npm that 04-shell.sh set
+# up, however this script was started.
+_run_installer() { # install-command
+  PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH" \
+    setsid --wait bash -c "set -o pipefail; $1"
+}
+
 install_ai_tools() {
   step "AI tools"
   local entry name cmd install
@@ -178,7 +188,7 @@ install_ai_tools() {
     if have "$cmd" || [[ -x $HOME/.local/bin/$cmd ]]; then
       skip "$name already installed"
     else
-      apply "install $name" bash -c "set -o pipefail; $install"
+      apply "install $name" _run_installer "$install"
     fi
   done
 }
