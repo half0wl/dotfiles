@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 24-kde-debloat.sh
+# 12-kde-debloat.sh
 #
 # Remove the KDE / Debian apps I don't use, and hide launchers of packages
 # that have to stay. Shows exactly what will be purged and asks first.
 #
 # Usage:
-#   ./24-kde-debloat.sh [--dry-run] [--yes]
+#   ./12-kde-debloat.sh [--dry-run] [--yes]
 #
 # Config (symlinked from conf/):
 #   ~/.local/share/applications/<launcher>.desktop

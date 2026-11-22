@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 11-configure-firefox.sh
+# 25-app-config-firefox.sh
 #
 # Firefox prefs from conf/firefox/user-prefs.js: sites can't override
 # browser or extension shortcuts, no GTK emoji picker on Ctrl+., and the
 # KDE Plasma global menu.
 #
 # Usage:
-#   ./11-configure-firefox.sh [--dry-run] [--yes]
+#   ./25-app-config-firefox.sh [--dry-run] [--yes]
 #
 #   Launch Firefox once (to create a profile) and quit it before the first
 #   run. Restart Firefox afterwards to apply changes.
@@ -18,7 +18,7 @@
 #   <default profile>/user.js      -> ~/.config/ff/user-prefs.js
 #
 # Notes:
-#   * Firefox itself is installed by 10-apps.sh (Mozilla's .deb).
+#   * Firefox itself is installed by 11-apps.sh (Mozilla's .deb).
 #   * Firefox reads user.js at startup and copies the values into
 #     prefs.js, so removing a line from user-prefs.js does not reset it;
 #     reset it in about:config.

@@ -1,4 +1,4 @@
-# Source packages for `apt-get build-dep pipewire` (06-audio.sh builds
+# Source packages for `apt-get build-dep pipewire` (07-audio.sh builds
 # PipeWire's AAC codec). Only linked when no other source provides them.
 Types: deb-src
 URIs: http://deb.debian.org/debian

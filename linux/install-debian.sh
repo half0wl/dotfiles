@@ -201,4 +201,4 @@ cryptsetup close "$CRYPT_NAME"
 
 log "Done. Remove the USB and reboot."
 echo "First boot: enter the LUKS passphrase, then Ctrl+Alt+F2, log in as $USERNAME, clone"
-echo "the dotfiles repo and run linux/00-preflight.sh (see linux/README.md)."
+echo "the dotfiles repo and run linux/sh/ in order (see linux/README.md)."

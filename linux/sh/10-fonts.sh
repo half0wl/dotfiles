@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 09-fonts.sh
+# 10-fonts.sh
 #
 # Popular fonts from apt, plus Monaspace (Nerd Font build) from GitHub.
 #
 # Usage:
-#   ./09-fonts.sh [--dry-run] [--yes] [--force]
+#   ./10-fonts.sh [--dry-run] [--yes] [--force]
 #
 #   --force   re-download Monaspace even if it is installed
 #

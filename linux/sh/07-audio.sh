@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 06-audio.sh
+# 07-audio.sh
 #
 # Best Bluetooth sound for AirPods Max 2 on PipeWire: AAC instead of SBC.
 #
@@ -14,7 +14,7 @@
 #      switches connected headphones to AAC, and verifies the whole chain.
 #
 # Usage:
-#   ./06-audio.sh [--dry-run] [--yes]
+#   ./07-audio.sh [--dry-run] [--yes]
 #
 #   Connect the AirPods Max 2 first so the per-device checks can run.
 #   Exit code 1 means a check failed (see the red lines).

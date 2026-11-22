@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 01-nvidia.sh
+# 02-nvidia.sh
 #
 # NVIDIA open kernel driver from NVIDIA's CUDA repo, built by DKMS for
 # every installed kernel and signed for Secure Boot. Does nothing on a
 # machine without an NVIDIA GPU.
 #
 # Usage:
-#   ./01-nvidia.sh [--dry-run] [--yes]
+#   ./02-nvidia.sh [--dry-run] [--yes]
 #
 # Notes:
 #   * Headers follow every new kernel (linux-headers-amd64), so DKMS can

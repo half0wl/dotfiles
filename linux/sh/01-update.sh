@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 00-preflight.sh
+# 01-update.sh
 #
-# First step on a fresh install: sanity checks, a full system upgrade, the
-# base packages every later script relies on, and firmware updates. Reboot
-# when it asks you to, then continue with 01-nvidia.sh.
+# After 00-default-dirs.sh on a fresh install: sanity checks, a full
+# system upgrade, the base packages every later script relies on, and
+# firmware updates. Reboot when it asks you to, then continue with
+# 02-nvidia.sh.
 #
 # Usage:
-#   ./00-preflight.sh [--dry-run] [--yes]
+#   ./01-update.sh [--dry-run] [--yes]
 #
 # Notes:
 #   * On an up-to-date machine this is a no-op: upgrades, autoremove and
@@ -133,7 +134,7 @@ offer_reboot() {
     would "reboot"
     return 0
   fi
-  warn "reboot before running 01-nvidia.sh"
+  warn "reboot before running 02-nvidia.sh"
   if confirm "Reboot now?"; then
     info "rebooting"
     sudo systemctl reboot

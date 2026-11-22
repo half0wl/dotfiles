@@ -1,0 +1,17 @@
+# XDG user dirs. Symlinked from dotfiles/linux/conf by
+# 00-default-dirs.sh; xdg-user-dirs-update is disabled in
+# user-dirs.conf so it never rewrites this file.
+#
+# Anything without its own save location lands in ~/Documents.
+XDG_DESKTOP_DIR="$HOME/Desktop"
+XDG_DOWNLOAD_DIR="$HOME/Downloads"
+XDG_DOCUMENTS_DIR="$HOME/Documents"
+XDG_MUSIC_DIR="$HOME/Documents"
+XDG_PICTURES_DIR="$HOME/Documents"
+XDG_VIDEOS_DIR="$HOME/Documents"
+# Hidden folders of their own, not ~/Documents or $HOME: file managers
+# offer every file in the templates dir under "Create New", and sharing
+# services (user-share, Bluetooth OBEX) publish the public-share dir.
+# "$HOME" only means "disabled" to apps that follow that convention.
+XDG_TEMPLATES_DIR="$HOME/.local/share/templates"
+XDG_PUBLICSHARE_DIR="$HOME/.local/share/public"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 02-system.sh
+# 03-system.sh
 #
 # System policy: automatic security updates that never remove kernels or
 # reboot on their own, a deny-incoming firewall, TTY login (Plasma starts
@@ -11,7 +11,7 @@
 # a USB dongle) keep working.
 #
 # Usage:
-#   ./02-system.sh [--dry-run] [--yes]
+#   ./03-system.sh [--dry-run] [--yes]
 #
 # Config (symlinked from conf/):
 #   /etc/apt/apt.conf.d/20auto-upgrades     unattended-upgrades on
@@ -132,7 +132,7 @@ configure_firewall() {
 
 configure_login() {
   step "Login"
-  # Plasma is started from ~/.zprofile on tty1 (see 04-shell.sh), so no
+  # Plasma is started from ~/.zprofile on tty1 (see 05-shell.sh), so no
   # display manager.
   if systemctl is-enabled --quiet sddm 2>/dev/null; then
     apply "disable sddm" sudo systemctl disable sddm

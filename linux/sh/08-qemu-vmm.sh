@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 07-qemu-vmm.sh
+# 08-qemu-vmm.sh
 #
 # Incus with QEMU, for development containers and VMs: installs both,
 # runs Incus' minimal init (a `dir` storage pool and the incusbr0 bridge),
@@ -9,12 +9,12 @@
 # the bridge.
 #
 # Usage:
-#   ./07-qemu-vmm.sh [--dry-run] [--yes]
+#   ./08-qemu-vmm.sh [--dry-run] [--yes]
 #
 # Notes:
 #   * Log out and back in after the first run, so the incus-admin group
 #     applies and `incus` works without sudo.
-#   * ufw (02-system.sh) owns the firewall, so Incus' own firewall rules
+#   * ufw (03-system.sh) owns the firewall, so Incus' own firewall rules
 #     are turned off for the bridge, and ufw lets guests reach the host
 #     only for DHCP and DNS, and route out to anywhere. This follows the
 #     Incus docs (howto/network_bridge_firewalld, "Use another firewall").

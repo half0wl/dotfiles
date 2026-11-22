@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 03-storage.sh
+# 04-storage.sh
 #
 # SSD housekeeping on the LUKS + LVM layout: pass TRIM through dm-crypt so
 # fstrim reaches the SSD (weekly fstrim.timer), and shrink ext4's root
@@ -9,7 +9,7 @@
 # for Mac-formatted drives.
 #
 # Usage:
-#   ./03-storage.sh [--dry-run] [--yes]
+#   ./04-storage.sh [--dry-run] [--yes]
 #
 # Config (symlinked from conf/):
 #   /etc/udisks2/mount_options.conf   udisks2/ (APFS mounts in Dolphin)
@@ -24,7 +24,7 @@
 #   * ext4 reserves 5% for root by default (~180G on 3.6T); 1% (~36G)
 #     still leaves root room to work when the disk fills up.
 #   * APFS: apfs-dkms is the kernel driver (DKMS-built, signed with the
-#     same MOK key as 01-nvidia.sh). It mounts read-only unless given
+#     same MOK key as 02-nvidia.sh). It mounts read-only unless given
 #     `-o readwrite`, and write support is experimental. Dolphin mounts
 #     through udisks, which conf/udisks2/mount_options.conf sets to
 #     writable and owned by you.
@@ -224,7 +224,7 @@ install_apfs() {
     ok "apfs module loads on $k"
   else
     warn "apfs module will not load on $k; with Secure Boot on, enroll" \
-      "the DKMS MOK key (01-nvidia.sh) and reboot"
+      "the DKMS MOK key (02-nvidia.sh) and reboot"
   fi
 }
 

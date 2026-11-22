@@ -16,7 +16,7 @@
 # Notes:
 #   * Themes and panel layouts are not managed; set them in System
 #     Settings.
-#   * Caps Lock -> Esc is done by keyd (05-keyd.sh), not here.
+#   * Caps Lock -> Esc is done by keyd (06-keyd.sh), not here.
 
 set -euo pipefail
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_lib.sh"

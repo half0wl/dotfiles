@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 08-podman.sh
+# 09-podman.sh
 #
 # Podman for development containers, rootless, with nothing running at
 # boot: Podman has no daemon, and its optional API socket/service and
 # timers stay disabled, system-wide and for your user.
 #
 # Usage:
-#   ./08-podman.sh [--dry-run] [--yes]
+#   ./09-podman.sh [--dry-run] [--yes]
 #
 # Notes:
 #   * Debian's podman package never enables its units on a fresh install

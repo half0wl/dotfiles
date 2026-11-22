@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 04-shell.sh
+# 05-shell.sh
 #
 # Shell and CLI: zsh as the login shell, the everyday CLI packages, and
 # the zsh / git / tmux / neovim / mise configs. Developer tools (neovim,
 # tmux, gh, node, ...) come from mise, pinned in conf/mise/config.toml.
 #
 # Usage:
-#   ./04-shell.sh [--dry-run] [--yes]
+#   ./05-shell.sh [--dry-run] [--yes]
 #
 # Config (symlinked from conf/):
 #   ~/.zshrc ~/.zprofile               zsh/
@@ -21,7 +21,7 @@
 #   ~/.claude/CLAUDE.md                ai/CLAUDE.md (-> AGENTS.md)
 #
 # Notes:
-#   * ~/.zprofile starts Plasma on tty1 (02-system.sh: no display
+#   * ~/.zprofile starts Plasma on tty1 (03-system.sh: no display
 #     manager).
 #   * `mise use -g <tool>` edits conf/mise/config.toml through the link.
 #   * GitHub auth is manual: gh auth login && gh auth setup-git.

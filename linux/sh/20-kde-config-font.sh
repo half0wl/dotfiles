@@ -57,7 +57,7 @@ GTK_FONT="$FAMILY,  $SIZE" # same spacing Plasma's GTK sync uses
 check_font() {
   step "Font"
   grep -qxF "$FAMILY" <<<"$(fc-list : family | tr ',' '\n')" ||
-    die "'$FAMILY' is not installed (run 09-fonts.sh)"
+    die "'$FAMILY' is not installed (run 10-fonts.sh)"
   ok "$FAMILY $SIZE (small text: $SMALL_SIZE)"
 }
 

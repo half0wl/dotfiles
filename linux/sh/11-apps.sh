@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 10-apps.sh
+# 11-apps.sh
 #
 # Desktop apps and their apt repos: Ghostty, Sublime Merge, Firefox
 # (Mozilla's build), Steam, Little Snitch, Flatpak + Flathub (Gear
 # Lever), and the AI CLIs (Claude Code, Ollama, pi).
 #
 # Usage:
-#   ./10-apps.sh [--dry-run] [--yes]
+#   ./11-apps.sh [--dry-run] [--yes]
 #
 # Config (symlinked from conf/):
 #   ~/.config/ghostty/config                    ghostty/config
@@ -20,7 +20,7 @@
 # Notes:
 #   * Signing keys are downloaded once (they are keys, not config).
 #   * Steam's repo and key are owned by the steam-launcher package.
-#   * Firefox prefs are linked by 11-configure-firefox.sh.
+#   * Firefox prefs are linked by 25-app-config-firefox.sh.
 #   * Installers piped from curl only run when the tool is missing.
 
 set -euo pipefail
@@ -173,7 +173,7 @@ install_flatpaks() {
 # Run a piped-from-curl installer with no controlling terminal: some
 # (pi) ask questions on /dev/tty, which the spinner would hide forever;
 # without a terminal they take their non-interactive defaults. mise's
-# shims go on PATH so installers find the node/npm that 04-shell.sh set
+# shims go on PATH so installers find the node/npm that 05-shell.sh set
 # up, however this script was started.
 _run_installer() { # install-command
   PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH" \
