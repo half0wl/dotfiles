@@ -5,10 +5,14 @@
 #
 # SSD housekeeping on the LUKS + LVM layout: pass TRIM through dm-crypt so
 # fstrim reaches the SSD (weekly fstrim.timer), and shrink ext4's root
-# reserve. Verifies the whole TRIM path at the end.
+# reserve. Verifies the whole TRIM path at the end. Also adds APFS support
+# for Mac-formatted drives.
 #
 # Usage:
 #   ./03-storage.sh [--dry-run] [--yes]
+#
+# Config (symlinked from conf/):
+#   /etc/udisks2/mount_options.conf   udisks2/ (APFS mounts in Dolphin)
 #
 # Notes:
 #   * /etc/crypttab holds this machine's volume UUIDs, so it is edited in
@@ -19,6 +23,14 @@
 #     blocks are unused.
 #   * ext4 reserves 5% for root by default (~180G on 3.6T); 1% (~36G)
 #     still leaves root room to work when the disk fills up.
+#   * APFS: apfs-dkms is the kernel driver (DKMS-built, signed with the
+#     same MOK key as 01-nvidia.sh). It mounts read-only unless given
+#     `-o readwrite`, and write support is experimental. Dolphin mounts
+#     through udisks, which conf/udisks2/mount_options.conf sets to
+#     writable and owned by you.
+#   * FileVault-encrypted APFS volumes need fsapfsmount (libfsapfs-utils,
+#     read-only, FUSE): fsapfsmount -p <password> /dev/sdX2 <dir>
+#   * Manual mount: sudo mount -t apfs -o ro[,vol=N] /dev/sdX2 <dir>
 
 set -euo pipefail
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_lib.sh"
@@ -29,6 +41,12 @@ source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_lib.sh"
 
 ROOT_LV=/dev/vg0/root
 RESERVED_PCT=1
+
+APFS_PACKAGES=(
+  apfs-dkms       # kernel driver: read-only, experimental read-write
+  apfsprogs       # mkfs.apfs, fsck.apfs
+  libfsapfs-utils # fsapfsmount / fsapfsinfo: FileVault volumes
+)
 
 # ---------------------------------------------------------------------------
 # Steps
@@ -187,8 +205,31 @@ verify_trim() {
   ((PROBLEMS == 0)) || die "$PROBLEMS TRIM check(s) failed"
 }
 
+# Built for the running kernel and loadable (fails on an unsigned module
+# with Secure Boot on).
+install_apfs() {
+  step "APFS"
+  apt_ensure "${APFS_PACKAGES[@]}"
+  link_conf udisks2/mount_options.conf /etc/udisks2/mount_options.conf
+  ((DRY_RUN)) && return 0
+
+  local k
+  k=$(uname -r)
+  if ! /usr/sbin/modinfo -k "$k" apfs >/dev/null 2>&1; then
+    warn "apfs module not built for $k" \
+      "(headers missing? sudo dkms autoinstall)"
+    return 0
+  fi
+  if sudo modprobe apfs 2>/dev/null; then
+    ok "apfs module loads on $k"
+  else
+    warn "apfs module will not load on $k; with Secure Boot on, enroll" \
+      "the DKMS MOK key (01-nvidia.sh) and reboot"
+  fi
+}
+
 main() {
-  lib_init "TRIM through LUKS, ext4 root reserve" "$@"
+  lib_init "TRIM through LUKS, ext4 root reserve, APFS" "$@"
   no_extra_args
   require_user
   need_sudo
@@ -198,6 +239,7 @@ main() {
   enable_live_trim
   configure_root_reserve
   verify_trim
+  install_apfs
 }
 
 main "$@"
