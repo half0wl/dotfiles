@@ -21,6 +21,9 @@
 #   * Steam's repo and key are owned by the steam-launcher package.
 #   * Firefox prefs are linked by 25-app-config-firefox.sh.
 #   * Installers piped from curl only run when the tool is missing.
+#   * Obsidian has no apt repo and updates itself in-app. Bumping its
+#     URL only affects new installs; deb_ensure skips an installed
+#     copy.
 #
 # Apps:
 #   Sublime Merge    apt (Sublime HQ repo)
@@ -29,6 +32,7 @@
 #   Flatpak          apt (Debian), with the Discover backend
 #   Steam            .deb (steam-launcher)
 #   Little Snitch    .deb (obdev.at)
+#   Obsidian         .deb (obsidianmd/obsidian-releases)
 #   Ghostty          installer script (mkasberg/ghostty-ubuntu)
 #   Gear Lever       Flatpak (Flathub)
 #   Claude Code      curl installer (claude.ai)
@@ -56,6 +60,9 @@ STEAM_DEB_URL+="/steam.deb"
 
 LITTLESNITCH_DEB_URL="https://obdev.at/downloads/littlesnitch-linux"
 LITTLESNITCH_DEB_URL+="/littlesnitch_1.1.1_amd64.deb"
+
+OBSIDIAN_DEB_URL="https://github.com/obsidianmd/obsidian-releases"
+OBSIDIAN_DEB_URL+="/releases/download/v1.15.1/obsidian_1.15.1_amd64.deb"
 
 APT_APPS=(
   flatpak
@@ -138,6 +145,7 @@ install_apt_apps() {
   apt_ensure "${APT_APPS[@]}"
   deb_ensure steam-launcher "$STEAM_DEB_URL"
   deb_ensure littlesnitch "$LITTLESNITCH_DEB_URL"
+  deb_ensure obsidian "$OBSIDIAN_DEB_URL"
   if pkg_installed littlesnitch || ((! DRY_RUN)); then
     systemd_enable littlesnitch --now
   fi

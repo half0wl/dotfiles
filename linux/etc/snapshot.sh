@@ -475,7 +475,7 @@ PKG_SOURCES=(
   "08-qemu-vmm|PACKAGES|"
   "09-podman|PACKAGES|"
   "10-fonts|APT_FONTS|"
-  "11-apps|APT_APPS|steam-launcher littlesnitch ghostty"
+  "11-apps|APT_APPS|steam-launcher littlesnitch obsidian ghostty"
   "12-kde-debloat|REMOVE|"
   "25-app-config-firefox|PACKAGES|"
 )

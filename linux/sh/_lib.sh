@@ -362,6 +362,9 @@ _lib_exit() {
   if ((_N_WARN)); then
     counts+=" · ${C_YELLOW}$_N_WARN warning$plural${C_OFF}"
   fi
+  if ((DRY_RUN)); then
+    counts+=" ${C_BLUE}[DRY RUN]${C_OFF}"
+  fi
   echo
   if ((rc == 0)); then
     printf '%s━━ ✔ %s done%s  %s\n' \
