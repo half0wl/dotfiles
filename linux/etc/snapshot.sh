@@ -797,8 +797,6 @@ system_03() {
 
   printf -- '- /boot: %s used\n' \
     "$(df --output=pcent /boot 2>/dev/null | tail -n 1 | tr -d ' ')"
-  printf -- '- Old udev rule 81-disable-internal-bt.rules: %s\n' \
-    "$(describe /etc/udev/rules.d/81-disable-internal-bt.rules)"
 }
 
 # Volumes in a crypttab, each with whether it has discard: the same
