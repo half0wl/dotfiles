@@ -179,6 +179,8 @@ LINKS=(
   "20-kde-config-font|$CFG/fontconfig/conf.d/60-configure-font.conf|\
     fontconfig/conf.d/60-configure-font.conf"
   "25-app-config-firefox|$CFG/ff/user-prefs.js|firefox/user-prefs.js"
+  "26-app-config-defaults|$SHARE/applications/nvim-ghostty.desktop|\
+    applications/nvim-ghostty.desktop"
 )
 
 # The same three lookups as 25-app-config-firefox.sh's find_profile (keep
