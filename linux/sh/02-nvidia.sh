@@ -180,7 +180,11 @@ finish() {
     die "$PROBLEMS problem(s) above;" \
       "fix them before booting the affected kernel(s)"
   fi
-  if ((_N_CHANGED || MOK_PENDING)) && ((!DRY_RUN)); then
+  # /run/reboot-required: 01-update.sh leaves the reboot for a new kernel
+  # to this script, whose own steps may all be skips by then (DKMS builds
+  # the module while the kernel installs).
+  if ((_N_CHANGED || MOK_PENDING)) || [[ -e /run/reboot-required ]]; then
+    ((!DRY_RUN)) || return 0
     step "Next"
     info "reboot, then check the driver with: nvidia-smi"
     if ((MOK_PENDING)); then

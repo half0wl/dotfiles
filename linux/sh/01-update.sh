@@ -5,8 +5,9 @@
 #
 # After 00-default-dirs.sh on a fresh install: sanity checks, a full
 # system upgrade, the base packages every later script relies on, and
-# firmware updates. Reboot when it asks you to, then continue with
-# 02-nvidia.sh.
+# firmware updates. With an NVIDIA GPU, run 02-nvidia.sh next and reboot
+# after it: it builds and checks the driver for any kernel this upgrade
+# installed. Otherwise reboot when it asks you to.
 #
 # Usage:
 #   ./01-update.sh [--dry-run] [--yes]
@@ -130,11 +131,17 @@ offer_reboot() {
     skip "nothing changed; no reboot needed"
     return 0
   fi
+  # 02-nvidia.sh builds and checks the driver for every kernel in /boot,
+  # including one this run just installed. Rebooting first could start
+  # that kernel without a working driver (no graphical session).
+  if have lspci && grep -qEi '(vga|3d).*nvidia' <<<"$(lspci)"; then
+    warn "NVIDIA GPU: run 02-nvidia.sh next, then reboot"
+    return 0
+  fi
   if ((DRY_RUN)); then
     would "reboot"
     return 0
   fi
-  warn "reboot before running 02-nvidia.sh"
   if confirm "Reboot now?"; then
     info "rebooting"
     sudo systemctl reboot

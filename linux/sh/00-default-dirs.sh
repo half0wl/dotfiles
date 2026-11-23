@@ -65,8 +65,15 @@ DIRS=(
 
 # Print up to 10 entries of DIR (top two levels), indented.
 show_contents() { # dir
-  find "$1" -mindepth 1 -maxdepth 2 2>/dev/null | sort | head -n 10 |
-    while IFS= read -r entry; do detail "$(pretty "$entry")"; done
+  local entries entry
+  # awk, not head: head exits early, sort then dies of SIGPIPE, and
+  # pipefail would fail the script. || true: an unreadable subfolder
+  # makes find fail, which shouldn't stop the listing either.
+  entries=$(find "$1" -mindepth 1 -maxdepth 2 2>/dev/null | sort |
+    awk 'NR <= 10' || true)
+  while IFS= read -r entry; do
+    if [[ -n $entry ]]; then detail "$(pretty "$entry")"; fi
+  done <<<"$entries"
 }
 
 remove_dir() { # name
@@ -84,7 +91,9 @@ remove_dir() { # name
     return 0
   fi
 
-  count=$(find "$dir" -mindepth 1 2>/dev/null | wc -l)
+  # || true: find fails on an unreadable subfolder; wc's count still
+  # stands (and any count above 0 means "ask first").
+  count=$(find "$dir" -mindepth 1 2>/dev/null | wc -l || true)
   if ((count == 0)); then
     apply "remove empty $(pretty "$dir")" rmdir -- "$dir"
     return 0
