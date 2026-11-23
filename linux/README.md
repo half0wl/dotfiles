@@ -132,6 +132,7 @@ use `sudo` where needed), e.g. `./sh/00-default-dirs.sh`:
 | [`23-kde-config-desktop.sh`](./sh/23-kde-config-desktop.sh)     | Configures animations, key repeat, mice, screen lock, session restore, display and launch shortcuts                                                                                                                                                                  | Plasma session                        |
 | [`24-kde-config-spectacle.sh`](./sh/24-kde-config-spectacle.sh) | Sets where Spectacle saves screenshots and recordings, and their file names                                                                                                                                                                                          | Plasma session                        |
 | [`25-app-config-firefox.sh`](./sh/25-app-config-firefox.sh)     | Links Firefox `user.js` prefs                                                                                                                                                                                                                                        | Plasma session; Firefox launched once |
+| [`26-app-config-defaults.sh`](./sh/26-app-config-defaults.sh)   | Sets default apps to open files with. Warns about any that are missing                                                                                                                                                                                               | `05-shell.sh`, `11-apps.sh`           |
 
 ### Notes
 
