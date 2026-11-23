@@ -1,5 +1,5 @@
 # XDG user dirs. Symlinked from dotfiles/linux/conf by
-# 00-default-dirs.sh; xdg-user-dirs-update is disabled in
+# 00-set-default-dirs.sh; xdg-user-dirs-update is disabled in
 # user-dirs.conf so it never rewrites this file.
 #
 # Anything without its own save location lands in ~/Documents.

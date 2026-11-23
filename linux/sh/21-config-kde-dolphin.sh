@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 21-kde-config-dolphin.sh
+# 21-config-kde-dolphin.sh
 #
 # Dolphin: show hidden files (dotfiles) in every folder by default,
 # smaller icons/rows in all three view modes so listings are more compact,
 # and the Information panel (F11) as a Quick Look-style preview.
 #
 # Usage:
-#   ./21-kde-config-dolphin.sh [--dry-run] [--yes]
+#   ./21-config-kde-dolphin.sh [--dry-run] [--yes]
 #
 #   Tweak the Settings block below, then re-run.
 #

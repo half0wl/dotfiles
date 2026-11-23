@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 03-system.sh
+# 03-config-system.sh
 #
-# System policy: automatic security updates that never remove kernels or
+# System policy and utilities: everyday system tools (disks, locales,
+# clipboard, ...), automatic security updates that never remove kernels or
 # reboot on their own, a deny-incoming firewall, TTY login (Plasma starts
 # from ~/.zprofile on tty1, no display manager), en_US.UTF-8, and the
 # motherboard's onboard Bluetooth adapter switched off. Only that one
@@ -11,7 +12,7 @@
 # a USB dongle) keep working.
 #
 # Usage:
-#   ./03-system.sh [--dry-run] [--yes]
+#   ./03-config-system.sh [--dry-run] [--yes]
 #
 # Config (symlinked from conf/):
 #   /etc/apt/apt.conf.d/20auto-upgrades     unattended-upgrades on
@@ -23,6 +24,19 @@
 #     systemd default target, /etc/locale.gen + update-locale.
 #   * Re-enable the onboard Bluetooth adapter: remove the udev link above
 #     and reboot.
+#
+# Packages:
+#   locales                provides locale-gen, for the locale below
+#   gdisk, parted          disk partitioning
+#   keyutils               kernel keyring tools (keyctl)
+#   inxi                   system information
+#   unzip                  .zip archives
+#   wl-clipboard           clipboard from the shell (wl-copy, wl-paste)
+#   libnotify-bin          notifications from the shell (notify-send)
+#   unattended-upgrades    automatic security updates
+#   apt-listchanges        changelogs for those updates
+#   ufw                    the firewall
+#   sddm                   display manager, disabled (TTY login instead)
 
 set -euo pipefail
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_lib.sh"
@@ -38,6 +52,18 @@ UPDATE_PACKAGES=(
   apt-listchanges
 )
 
+# Everyday system tools.
+SYSTEM_PACKAGES=(
+  locales
+  gdisk
+  parted
+  keyutils
+  inxi
+  unzip
+  wl-clipboard
+  libnotify-bin
+)
+
 # Onboard Bluetooth adapter to disable (the B850I's Realtek, a USB device
 # on the motherboard). Only this vendor:product is deauthorized; the
 # Bluetooth stack and any other adapter are left alone.
@@ -47,6 +73,9 @@ BT_PRODUCT=8922
 # Warn when /boot is fuller than this (every kept kernel uses some).
 BOOT_WARN_PCT=80
 
+# Display manager to disable: Plasma starts from ~/.zprofile on tty1.
+DISPLAY_MANAGER=sddm
+
 APT_CONF=/etc/apt/apt.conf.d
 UDEV_SRC=udev/81-disable-onboard-bt.rules
 UDEV_RULE=/etc/udev/rules.d/81-disable-onboard-bt.rules
@@ -54,6 +83,11 @@ UDEV_RULE=/etc/udev/rules.d/81-disable-onboard-bt.rules
 # ---------------------------------------------------------------------------
 # Steps
 # ---------------------------------------------------------------------------
+
+install_utilities() {
+  step "System tools"
+  apt_ensure "${SYSTEM_PACKAGES[@]}"
+}
 
 configure_apt() {
   step "Automatic updates"
@@ -66,17 +100,17 @@ configure_apt() {
   local dump uu='Unattended-Upgrade'
   dump=$(apt-config dump)
   if [[ $dump == *"$uu::Remove-Unused-Kernel-Packages \"false\""* ]]; then
-    ok "unattended-upgrades will not remove kernels"
+    ok "automatic updates will not remove kernels"
   else
     warn "another apt config overrides Remove-Unused-Kernel-Packages:"
     grep -rn 'Remove-Unused-Kernel-Packages' "$APT_CONF/" |
       sed 's/^/        /' || true
   fi
   if [[ $dump == *"$uu::Automatic-Reboot \"true\""* ]]; then
-    warn "unattended-upgrades is set to reboot automatically;" \
+    warn "automatic updates are set to reboot on their own;" \
       "check $APT_CONF/"
   else
-    ok "unattended-upgrades will not reboot on its own"
+    ok "automatic updates will not reboot on their own"
   fi
   local remv
   remv=$(apt-get -s autoremove 2>/dev/null |
@@ -112,32 +146,33 @@ configure_firewall() {
   local status
   status=$(sudo ufw status verbose 2>/dev/null || true)
   if [[ $status == *"deny (incoming)"* ]]; then
-    skip "ufw: incoming already denied by default"
+    skip "firewall: incoming already denied by default"
   else
-    apply "ufw: deny incoming by default" \
+    apply "firewall: deny incoming by default" \
       sudo ufw default deny incoming
   fi
   if [[ $status == *"allow (outgoing)"* ]]; then
-    skip "ufw: outgoing already allowed by default"
+    skip "firewall: outgoing already allowed by default"
   else
-    apply "ufw: allow outgoing by default" \
+    apply "firewall: allow outgoing by default" \
       sudo ufw default allow outgoing
   fi
   if [[ $status == *"Status: active"* ]]; then
-    skip "ufw already active"
+    skip "firewall already active"
   else
-    apply "ufw: enable" sudo ufw --force enable
+    apply "firewall: enable" sudo ufw --force enable
   fi
 }
 
 configure_login() {
   step "Login"
-  # Plasma is started from ~/.zprofile on tty1 (see 05-shell.sh), so no
+  # Plasma is started from ~/.zprofile on tty1 (see 06-zsh.sh), so no
   # display manager.
-  if systemctl is-enabled --quiet sddm 2>/dev/null; then
-    apply "disable sddm" sudo systemctl disable sddm
+  if systemctl is-enabled --quiet "$DISPLAY_MANAGER" 2>/dev/null; then
+    apply "disable $DISPLAY_MANAGER" \
+      sudo systemctl disable "$DISPLAY_MANAGER"
   else
-    skip "sddm already disabled"
+    skip "$DISPLAY_MANAGER already disabled"
   fi
   if [[ $(systemctl get-default) == multi-user.target ]]; then
     skip "default target is already multi-user.target"
@@ -199,11 +234,12 @@ disable_onboard_bluetooth() {
 }
 
 main() {
-  lib_init "Updates, firewall, login, locale, onboard Bluetooth" "$@"
+  lib_init "Tools, updates, firewall, login, locale, onboard Bluetooth" "$@"
   no_extra_args
   require_user
   need_sudo
 
+  install_utilities
   configure_apt
   report_boot_space
   configure_firewall

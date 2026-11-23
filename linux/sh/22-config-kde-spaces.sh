@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 22-kde-config-spaces.sh
+# 22-config-kde-spaces.sh
 #
 # macOS Mission Control + Spaces on Plasma: Meta+Up opens the Overview
 # (browse, create, rename and drag windows between virtual desktops),
@@ -9,7 +9,7 @@
 # shows windows from every desktop, and desktops sit in a single row.
 #
 # Usage:
-#   ./22-kde-config-spaces.sh [--dry-run] [--yes]
+#   ./22-config-kde-spaces.sh [--dry-run] [--yes]
 #
 #   Run inside Plasma. Tweak the Settings block below, then re-run.
 #

@@ -14,7 +14,8 @@ export PAGER='less'
 export LESS='-g -i -M -R -S -w -z-4'
 typeset -U path  # ensure no duplicate PATH entries
 path=("$HOME/.local/bin" $path)
-eval "$(~/.local/bin/mise activate zsh)"  # mise-managed tools on PATH
+# mise-managed tools on PATH (once 07-dev-toolshed.sh has installed mise)
+[[ -x ~/.local/bin/mise ]] && eval "$(~/.local/bin/mise activate zsh)"
 
 # Options
 

@@ -46,6 +46,7 @@
 #   ensure_link <target> <dst>            symlink dst -> target
 #   apt_ensure pkg...                     install missing apt packages
 #   apt_update                            refresh package lists
+#   ensure_key <label> <url> <dst> <dearmor 0|1>   install an apt key
 #   deb_ensure <pkg> <url>                install a .deb if missing
 #   systemd_enable <unit> [--now]         enable (and start) a unit
 #   kconf_set [--notify] [--default V] <file> <group> <key> <value>
@@ -53,6 +54,7 @@
 #
 # Flags set by helpers so scripts can react to changes:
 #   LINK_CHANGED=1   a link was created or changed
+#   KEY_CHANGED=1    an apt signing key was installed
 #   KCONF_CHANGED=1  a KDE config key was written
 #
 # Style: no line in this file or the scripts is longer than 78 characters.
@@ -77,6 +79,7 @@ ASSUME_YES=0
 ARGS=() # arguments lib_init did not recognise, for the script to handle
 
 LINK_CHANGED=0
+KEY_CHANGED=0
 KCONF_CHANGED=0
 
 _N_CHANGED=0
@@ -572,6 +575,31 @@ apt_ensure() {
 
 apt_update() {
   apply "apt: refresh package lists" sudo apt-get update
+}
+
+_fetch_key() { # url dst dearmor(0|1)
+  local tmp
+  tmp=$(mktemp)
+  curl -fsSL -o "$tmp" "$1"
+  if (($3)); then
+    gpg --dearmor <"$tmp" | sudo install -D -m 644 /dev/stdin "$2"
+  else
+    sudo install -D -m 644 "$tmp" "$2"
+  fi
+  rm -f -- "$tmp"
+}
+
+# ensure_key LABEL URL DST DEARMOR -- install an apt repo's signing key
+# from URL at DST unless it is there (DEARMOR=1: convert an ASCII-armored
+# key to the binary form DST expects). Keys are downloaded once, not
+# linked from conf/: they are keys, not config. Needs curl (and gpg).
+ensure_key() {
+  if [[ -s $3 ]]; then
+    skip "$1 signing key already installed"
+  else
+    apply "$1 signing key → $3" _fetch_key "$2" "$3" "$4"
+    KEY_CHANGED=1
+  fi
 }
 
 _install_deb_from_url() { # url

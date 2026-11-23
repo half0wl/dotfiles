@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 12-kde-debloat.sh
+# 25-config-kde-debloat.sh
 #
 # Remove the KDE / Debian apps I don't use, and hide launchers of packages
 # that have to stay. Shows exactly what will be purged and asks first.
 #
 # Usage:
-#   ./12-kde-debloat.sh [--dry-run] [--yes]
+#   ./25-config-kde-debloat.sh [--dry-run] [--yes]
 #
 # Config (symlinked from conf/):
 #   ~/.local/share/applications/<launcher>.desktop
@@ -18,6 +18,21 @@
 #     installed first, so autoremove only takes what's listed.
 #   * Aborts without changing anything if the purge would take the Plasma
 #     desktop itself.
+#
+# Removed:
+#   KDE PIM          akregator, grantlee-editor, kaddressbook, kmail,
+#                    korganizer, ktnef, mbox-importer, pim-data-exporter,
+#                    sieveeditor
+#   KDE apps         dragonplayer, gwenview, juk, kate, kwrite, kcalc,
+#                    kdeconnect, kfind, kmag, kmousetool, kmouth,
+#                    konqueror, konsole, kontrast, kwalletmanager,
+#                    khelpcenter, kinfocenter, plasma-welcome
+#   LibreOffice      libreoffice (the metapackage), -draw, -impress,
+#                    -math; the rest of the suite (Writer, Calc, ...) stays
+#   Other            xterm, firefox-esr (Mozilla's Firefox replaces it)
+#
+# Hidden:
+#   LibreOffice Start Center (libreoffice-startcenter.desktop)
 
 set -euo pipefail
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_lib.sh"

@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 01-update.sh
+# 01-update-system.sh
 #
-# After 00-default-dirs.sh on a fresh install: sanity checks, a full
+# After 00-set-default-dirs.sh on a fresh install: sanity checks, a full
 # system upgrade, the base packages every later script relies on, and
-# firmware updates. With an NVIDIA GPU, run 02-nvidia.sh next and reboot
-# after it: it builds and checks the driver for any kernel this upgrade
-# installed. Otherwise reboot when it asks you to.
+# firmware updates. With an NVIDIA GPU, run 02-install-nvidia-drivers.sh
+# next and reboot after it: it builds and checks the driver for any
+# kernel this upgrade installed. Otherwise reboot when it asks you to.
 #
 # Usage:
-#   ./01-update.sh [--dry-run] [--yes]
+#   ./01-update-system.sh [--dry-run] [--yes]
 #
 # Notes:
 #   * On an up-to-date machine this is a no-op: upgrades, autoremove and
@@ -18,6 +18,20 @@
 #   * fwupdmgr asks before flashing each device (unless --yes).
 #   * Headers for the running kernel can be missing right after an upgrade
 #     pulled in a newer kernel; reboot into it and re-run.
+#
+# Packages:
+#   linux-headers-amd64     headers that follow every new kernel, so DKMS
+#                           can build modules for it
+#   linux-headers-<kernel>  headers for the running kernel
+#   dkms                    builds kernel modules (NVIDIA, APFS)
+#   mokutil, keyutils       Secure Boot key enrollment and signing
+#   pciutils                lspci, to detect the GPU
+#   curl, wget              downloads
+#   ca-certificates         trusted CAs for those downloads
+#   gnupg                   apt repo signing keys
+#   git                     this repo
+#   python3                 helpers inside several scripts
+#   fwupd                   firmware updates (fwupdmgr)
 
 set -euo pipefail
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_lib.sh"
@@ -103,7 +117,7 @@ upgrade_packages() {
 
 update_firmware() {
   step "Firmware"
-  busy "fwupd: refresh metadata" sudo fwupdmgr refresh --force
+  busy "firmware: refresh metadata" sudo fwupdmgr refresh --force
 
   # get-updates exits 0 when updates are available, 2 when there is
   # nothing to do.
@@ -115,11 +129,11 @@ update_firmware() {
     0)
       local -a yes=()
       ((ASSUME_YES)) && yes=(-y)
-      apply_tty "fwupd: install firmware updates" \
+      apply_tty "firmware: install updates" \
         sudo fwupdmgr update "${yes[@]}"
       ;;
     *)
-      warn "fwupdmgr get-updates failed (exit $rc);" \
+      warn "checking for firmware updates failed (exit $rc);" \
         "run 'fwupdmgr get-updates' to see why"
       ;;
   esac
@@ -131,11 +145,12 @@ offer_reboot() {
     skip "nothing changed; no reboot needed"
     return 0
   fi
-  # 02-nvidia.sh builds and checks the driver for every kernel in /boot,
-  # including one this run just installed. Rebooting first could start
-  # that kernel without a working driver (no graphical session).
+  # 02-install-nvidia-drivers.sh builds and checks the driver for every
+  # kernel in /boot, including one this run just installed. Rebooting
+  # first could start that kernel without a working driver (no graphical
+  # session).
   if have lspci && grep -qEi '(vga|3d).*nvidia' <<<"$(lspci)"; then
-    warn "NVIDIA GPU: run 02-nvidia.sh next, then reboot"
+    warn "NVIDIA GPU: run 02-install-nvidia-drivers.sh next, then reboot"
     return 0
   fi
   if ((DRY_RUN)); then

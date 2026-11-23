@@ -15,8 +15,13 @@
 #   diff -u /tmp/before.md /tmp/after.md
 #
 # Notes:
-#   * Read-only, and never asks for sudo. What only root can read is listed
-#     at the end of the output as not captured.
+#   * Run it as yourself, not with sudo: it asks for your sudo password
+#     once, up front, for the reads only root can do (ufw rules, the
+#     initramfs, tune2fs, mokutil, fwupd). Everything else has to be read
+#     as you: under plain `sudo`, ~ would be root's, and so would the user
+#     units, KDE settings and mise tools.
+#   * Read-only. The one thing it writes, besides FILE.md, is a temporary
+#     folder to unpack each initramfs into, removed straight after.
 #   * One line per item, in a fixed order, no timestamps: the diff shows
 #     only what changed.
 #   * Package, unit, folder and similar lists are read from each script's
@@ -66,6 +71,15 @@ if [[ -z $OUT ]]; then
   echo "usage: $0 --output=FILE.md" >&2
   exit 1
 fi
+if ((EUID == 0)); then
+  echo "run as your normal user, not with sudo: it asks for sudo" \
+    "itself, for the reads only root can do" >&2
+  exit 1
+fi
+if ! sudo -v; then
+  echo "sudo is needed for the reads only root can do" >&2
+  exit 1
+fi
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -77,6 +91,9 @@ die() {
 }
 
 have() { command -v "$1" >/dev/null 2>&1; }
+
+# A root-only read. The password was asked for up front (sudo -v).
+root() { sudo -n "$@"; }
 
 pretty() { printf '%s' "${1/#$HOME/\~}"; }
 
@@ -133,57 +150,59 @@ describe() {
 
 # "script|destination|target". A target starting with / is absolute,
 # otherwise relative to conf/. A "?" before the target marks a link the
-# script only makes when nothing else provides it (07's apt sources).
-# Links built from a script's array (07's PipeWire files, 12's hidden
+# script only makes when nothing else provides it (05's apt sources).
+# Links built from a script's array (05's PipeWire files, 25's hidden
 # launchers) and Firefox's user.js are added in section_links.
 LINKS=(
-  "00-default-dirs|$CFG/user-dirs.conf|xdg/user-dirs.conf"
-  "00-default-dirs|$CFG/user-dirs.dirs|xdg/user-dirs.dirs"
-  "03-system|/etc/apt/apt.conf.d/20auto-upgrades|\
+  "00-set-default-dirs|$CFG/user-dirs.conf|xdg/user-dirs.conf"
+  "00-set-default-dirs|$CFG/user-dirs.dirs|xdg/user-dirs.dirs"
+  "03-config-system|/etc/apt/apt.conf.d/20auto-upgrades|\
     apt/apt.conf.d/20auto-upgrades"
-  "03-system|/etc/apt/apt.conf.d/99keep-all-kernels|\
+  "03-config-system|/etc/apt/apt.conf.d/99keep-all-kernels|\
     apt/apt.conf.d/99keep-all-kernels"
-  "03-system|/etc/udev/rules.d/81-disable-onboard-bt.rules|\
+  "03-config-system|/etc/udev/rules.d/81-disable-onboard-bt.rules|\
     udev/81-disable-onboard-bt.rules"
-  "04-storage|/etc/udisks2/mount_options.conf|udisks2/mount_options.conf"
-  "05-shell|$HOME/.zshrc|zsh/zshrc"
-  "05-shell|$HOME/.zprofile|zsh/zprofile"
-  "05-shell|$HOME/.gitconfig|git/gitconfig"
-  "05-shell|$HOME/.gitignore_global|git/gitignore_global"
-  "05-shell|$CFG/git/hooks|git/hooks"
-  "05-shell|$HOME/.tmux.conf|tmux/tmux.conf"
-  "05-shell|$CFG/tmux/plugins|tmux/plugins"
-  "05-shell|$CFG/nvim|nvim"
-  "05-shell|$CFG/mise/config.toml|mise/config.toml"
-  "05-shell|$CFG/gh/config.yml|gh/config.yml"
-  "05-shell|$HOME/.claude/CLAUDE.md|ai/CLAUDE.md"
-  "06-keyd|$CFG/keyd/default.conf|keyd/default.conf"
-  "06-keyd|/etc/keyd/default.conf|$CFG/keyd/default.conf"
-  "06-keyd|$CFG/keyd/app.conf|keyd/app.conf"
-  "06-keyd|$CFG/autostart/keyd-application-mapper.desktop|\
+  "04-config-storage|/etc/udisks2/mount_options.conf|\
+    udisks2/mount_options.conf"
+  "06-zsh|$HOME/.zshrc|zsh/zshrc"
+  "06-zsh|$HOME/.zprofile|zsh/zprofile"
+  "07-dev-toolshed|$HOME/.gitconfig|git/gitconfig"
+  "07-dev-toolshed|$HOME/.gitignore_global|git/gitignore_global"
+  "07-dev-toolshed|$CFG/git/hooks|git/hooks"
+  "07-dev-toolshed|$HOME/.tmux.conf|tmux/tmux.conf"
+  "07-dev-toolshed|$CFG/tmux/plugins|tmux/plugins"
+  "07-dev-toolshed|$CFG/nvim|nvim"
+  "07-dev-toolshed|$CFG/mise/config.toml|mise/config.toml"
+  "07-dev-toolshed|$CFG/gh/config.yml|gh/config.yml"
+  "07-dev-toolshed|$HOME/.claude/CLAUDE.md|ai/CLAUDE.md"
+  "08-keyd|$CFG/keyd/default.conf|keyd/default.conf"
+  "08-keyd|/etc/keyd/default.conf|$CFG/keyd/default.conf"
+  "08-keyd|$CFG/keyd/app.conf|keyd/app.conf"
+  "08-keyd|$CFG/autostart/keyd-application-mapper.desktop|\
     keyd/keyd-application-mapper.desktop"
-  "06-keyd|/usr/local/bin/keyd|/usr/bin/keyd.rvaiya"
-  "07-audio|/etc/apt/sources.list.d/debian-non-free.list|\
+  "08-keyd|/usr/local/bin/keyd|/usr/bin/keyd.rvaiya"
+  "05-config-bt-audio|/etc/apt/sources.list.d/debian-non-free.list|\
     ?apt/sources.list.d/debian-non-free.list"
-  "07-audio|/etc/apt/sources.list.d/debian-src.sources|\
+  "05-config-bt-audio|/etc/apt/sources.list.d/debian-src.sources|\
     ?apt/sources.list.d/debian-src.sources"
-  "07-audio|/etc/bluetooth/main.conf|bluetooth/main.conf"
-  "11-apps|/etc/apt/sources.list.d/sublime-text.list|\
+  "05-config-bt-audio|/etc/bluetooth/main.conf|bluetooth/main.conf"
+  "07-dev-toolshed|/etc/apt/sources.list.d/sublime-text.list|\
     apt/sources.list.d/sublime-text.list"
-  "11-apps|/etc/apt/sources.list.d/mozilla.sources|\
+  "10-apps|/etc/apt/sources.list.d/mozilla.sources|\
     apt/sources.list.d/mozilla.sources"
-  "11-apps|/etc/apt/preferences.d/mozilla|apt/preferences.d/mozilla"
-  "11-apps|$CFG/ghostty/config|ghostty/config"
-  "11-apps|$CFG/sublime-merge/Packages/User/Preferences.sublime-settings|\
+  "10-apps|/etc/apt/preferences.d/mozilla|apt/preferences.d/mozilla"
+  "07-dev-toolshed|$CFG/ghostty/config|ghostty/config"
+  "07-dev-toolshed|$CFG/sublime-merge/Packages/User/\
+Preferences.sublime-settings|\
     sublime-merge/Preferences.sublime-settings"
-  "20-kde-config-font|$CFG/fontconfig/conf.d/60-configure-font.conf|\
+  "20-config-kde-font|$CFG/fontconfig/conf.d/60-configure-font.conf|\
     fontconfig/conf.d/60-configure-font.conf"
-  "25-app-config-firefox|$CFG/ff/user-prefs.js|firefox/user-prefs.js"
-  "26-app-config-defaults|$SHARE/applications/nvim-ghostty.desktop|\
+  "26-config-app-firefox|$CFG/ff/user-prefs.js|firefox/user-prefs.js"
+  "27-config-app-mime-defaults|$SHARE/applications/nvim-ghostty.desktop|\
     applications/nvim-ghostty.desktop"
 )
 
-# The same three lookups as 25-app-config-firefox.sh's find_profile (keep
+# The same three lookups as 26-config-app-firefox.sh's find_profile (keep
 # them in sync): the install's default, the Default=1 profile, the first.
 AWK_INSTALL_DEFAULT='
   /^\[Install/ { f = 1; next }
@@ -195,10 +214,10 @@ AWK_PROFILE_DEFAULT='
   $1 == "Default" && $2 == 1 { print path; exit }'
 AWK_FIRST_PROFILE='$1 == "Path" { print $2; exit }'
 
-# The Firefox profile 25 links user.js into, over its PROFILE_ROOTS.
+# The Firefox profile 26 links user.js into, over its PROFILE_ROOTS.
 firefox_profile() {
   local roots base ini p prog
-  load roots 25-app-config-firefox PROFILE_ROOTS
+  load roots 26-config-app-firefox PROFILE_ROOTS
   for base in "${roots[@]}"; do
     ini="$base/profiles.ini"
     [[ -f $ini ]] || continue
@@ -240,16 +259,19 @@ section_links() {
   local -a links resample hide
   links=("${LINKS[@]}")
 
-  wp=$(settings 07-audio WP_SRC)
-  links+=("07-audio|$CFG/$wp|$wp")
-  load resample 07-audio RESAMPLE_SRCS
-  for src in "${resample[@]}"; do links+=("07-audio|$CFG/$src|$src"); done
-  load hide 12-kde-debloat HIDE
+  wp=$(settings 05-config-bt-audio WP_SRC)
+  links+=("05-config-bt-audio|$CFG/$wp|$wp")
+  load resample 05-config-bt-audio RESAMPLE_SRCS
+  for src in "${resample[@]}"; do
+    links+=("05-config-bt-audio|$CFG/$src|$src")
+  done
+  load hide 25-config-kde-debloat HIDE
   for src in "${hide[@]}"; do
-    links+=("12-kde-debloat|$SHARE/applications/$src|applications/$src")
+    links+=("25-config-kde-debloat|$SHARE/applications/$src|\
+applications/$src")
   done
   if profile=$(firefox_profile); then
-    links+=("25-app-config-firefox|$profile/user.js|$CFG/ff/user-prefs.js")
+    links+=("26-config-app-firefox|$profile/user.js|$CFG/ff/user-prefs.js")
   fi
 
   heading "Config links"
@@ -274,7 +296,7 @@ section_links() {
   local old
   old=$({
     find "$HOME" -maxdepth 5 -xdev -lname '*dotfiles-linux*' 2>/dev/null
-    find /etc -maxdepth 4 -lname '*dotfiles-linux*' 2>/dev/null
+    root find /etc -maxdepth 4 -lname '*dotfiles-linux*' 2>/dev/null
   } | sort || true)
   if [[ -z $old ]]; then
     echo "- none"
@@ -366,7 +388,7 @@ PY
 }
 
 # Mode, scale and VRR policy of an output (23), as KWin saved them; the
-# same reading as 23-kde-config-desktop.sh's current_display.
+# same reading as 23-config-kde-desktop.sh's current_display.
 display_state() { # output
   python3 -I - "$1" "$CFG/kwinoutputconfig.json" <<'PY'
 import json, sys
@@ -402,12 +424,12 @@ section_kde() {
   local entry file group key v out
   local -a keys mice launchers gtk_files
   keys=("${KDE_KEYS[@]}")
-  load mice 23-kde-config-desktop MOUSE_SETTINGS
+  load mice 23-config-kde-desktop MOUSE_SETTINGS
   for entry in "${mice[@]}"; do # group|key|value
     IFS='|' read -r group key _ <<<"$entry"
     keys+=("kcminputrc|$group|$key")
   done
-  load launchers 23-kde-config-desktop UNBOUND_LAUNCHERS
+  load launchers 23-config-kde-desktop UNBOUND_LAUNCHERS
   for entry in "${launchers[@]}"; do
     keys+=("kglobalshortcutsrc|services/$entry|_launch")
   done
@@ -424,8 +446,8 @@ section_kde() {
   printf -- '- Dolphin view properties, HiddenFilesShown: `%s`\n' \
     "$(dolphin_hidden)"
 
-  load gtk_files 20-kde-config-font GTK_FILES
-  gtk_files+=("$(settings 20-kde-config-font XSETTINGSD_FILE)")
+  load gtk_files 20-config-kde-font GTK_FILES
+  gtk_files+=("$(settings 20-config-kde-font XSETTINGSD_FILE)")
   for file in "${gtk_files[@]}"; do
     if [[ ! -f $file ]]; then
       v="missing"
@@ -447,13 +469,13 @@ section_kde() {
     sed -E 's/.*uint32 ([0-9]+).*/\1/' || true)
   printf -- '- Virtual desktop rows: %s\n' "${v:-unknown (no Plasma session)}"
 
-  out=$(settings 23-kde-config-desktop DISPLAY_OUTPUT)
+  out=$(settings 23-config-kde-desktop DISPLAY_OUTPUT)
   if [[ -n $out ]]; then
     printf -- '- Display `%s`: %s\n' "$out" "$(display_state "$out")"
   fi
 
   for key in IMAGE_DIR VIDEO_DIR; do
-    v=$(settings 24-kde-config-spectacle "$key")
+    v=$(settings 24-config-kde-spectacle "$key")
     printf -- '- Spectacle folder `%s`: %s\n' "$(pretty "$v")" \
       "$(describe "$v")"
   done
@@ -463,25 +485,26 @@ section_kde() {
 # Packages and services
 # ---------------------------------------------------------------------------
 
-# "script|Settings array|packages it installs outside an array".
+# "script|Settings arrays|packages it installs outside an array".
 PKG_SOURCES=(
-  "01-update|BASE_PACKAGES|"
-  "02-nvidia|DRIVER_PACKAGES|cuda-keyring"
-  "03-system|UPDATE_PACKAGES|ufw"
-  "04-storage|APFS_PACKAGES|"
-  "05-shell|PACKAGES|"
-  "06-keyd||keyd"
-  "07-audio|BUILD_DEPS|libfdk-aac-dev"
-  "08-qemu-vmm|PACKAGES|"
-  "09-podman|PACKAGES|"
-  "10-fonts|APT_FONTS|"
-  "11-apps|APT_APPS|steam-launcher littlesnitch obsidian ghostty"
-  "12-kde-debloat|REMOVE|"
-  "25-app-config-firefox|PACKAGES|"
+  "01-update-system|BASE_PACKAGES|"
+  "02-install-nvidia-drivers|DRIVER_PACKAGES|cuda-keyring"
+  "03-config-system|SYSTEM_PACKAGES UPDATE_PACKAGES|ufw"
+  "04-config-storage|APFS_PACKAGES|"
+  "05-config-bt-audio|BUILD_DEPS|libfdk-aac-dev"
+  "06-zsh|PACKAGES|"
+  "07-dev-toolshed|CLI_PACKAGES GIT_CLIENT_PACKAGES TERMINAL_PACKAGE \
+VM_PACKAGES PODMAN_PACKAGES|"
+  "08-keyd||keyd"
+  "09-fonts|APT_FONTS|"
+  "10-apps|APT_APPS DEB_APPS|"
+  "25-config-kde-debloat|REMOVE|"
+  "26-config-app-firefox|PACKAGES|"
 )
 
-# Services the scripts enable, disable or rely on (09's come from UNITS).
-SYSTEM_UNITS=(keyd fstrim.timer littlesnitch sddm ufw)
+# Services the scripts enable, disable or rely on (07's PODMAN_UNITS and
+# 10's APP_SERVICES are added in section_services).
+SYSTEM_UNITS=(keyd fstrim.timer sddm ufw)
 
 pkg_state() {
   local s
@@ -498,21 +521,27 @@ pkg_state() {
 }
 
 section_packages() {
-  local entry script arr extra p
-  local -a pkgs extra_pkgs
+  local entry script arrays arr extra p
+  local -a pkgs more names
   heading "Packages"
   for entry in "${PKG_SOURCES[@]}"; do
-    IFS='|' read -r script arr extra <<<"$entry"
+    IFS='|' read -r script arrays extra <<<"$entry"
+    extra=${extra#"${extra%%[! ]*}"} # continuation indent
     pkgs=()
-    if [[ -n $arr ]]; then load pkgs "$script" "$arr"; fi
-    read -ra extra_pkgs <<<"$extra"
-    pkgs+=("${extra_pkgs[@]}")
-    if [[ $script == 12-kde-debloat ]]; then
+    read -ra names <<<"$arrays"
+    for arr in "${names[@]}"; do
+      load more "$script" "$arr"
+      pkgs+=("${more[@]}")
+    done
+    read -ra more <<<"$extra"
+    pkgs+=("${more[@]}")
+    if [[ $script == 25-config-kde-debloat ]]; then
       subheading "$script (purges these)"
     else
       subheading "$script"
     fi
     for p in "${pkgs[@]}"; do
+      p=${p%%|*} # "package|url" entries (10's DEB_APPS)
       printf -- '- `%s`: %s\n' "$p" "$(pkg_state "$p")"
     done
   done
@@ -531,10 +560,11 @@ unit_state() { # [--user] unit
 
 section_services() {
   local u
-  local -a podman_units
-  load podman_units 09-podman UNITS
+  local -a podman_units app_units
+  load podman_units 07-dev-toolshed PODMAN_UNITS
+  load app_units 10-apps APP_SERVICES
   heading "Services"
-  for u in "${SYSTEM_UNITS[@]}" "${podman_units[@]}"; do
+  for u in "${SYSTEM_UNITS[@]}" "${app_units[@]}" "${podman_units[@]}"; do
     printf -- '- `%s`: %s\n' "$u" "$(unit_state "$u")"
   done
   for u in "${podman_units[@]}"; do
@@ -562,7 +592,7 @@ section_user() {
     fi
   done
 
-  load installers 11-apps CURL_INSTALLERS
+  load installers 07-dev-toolshed CURL_INSTALLERS
   for entry in "mise|mise" "${installers[@]}"; do # name|command|...
     IFS='|' read -r name cmd _ <<<"$entry"
     if have "$cmd"; then
@@ -573,7 +603,7 @@ section_user() {
   done
 
   echo
-  echo "mise tools (from 05-shell):"
+  echo "mise tools (from 07-dev-toolshed):"
   if ! have mise; then
     echo "- mise not installed"
     return 0
@@ -593,8 +623,8 @@ section_user() {
 # System state, by script
 # ---------------------------------------------------------------------------
 
-# Kernels as 02-nvidia.sh finds them: the ones in /boot. /lib/modules can
-# hold leftovers of removed kernels.
+# Kernels as 02-install-nvidia-drivers.sh finds them: the ones in /boot.
+# /lib/modules can hold leftovers of removed kernels.
 kernels() {
   find /boot -maxdepth 1 -name 'vmlinuz-*' -printf '%f\n' |
     sed 's/^vmlinuz-//' | sort -V
@@ -611,10 +641,56 @@ nvidia_module() { # kernel
   [[ -n $signer ]] || printf 'unsigned'
 }
 
-system_kernels() {
+# The same reading of `mokutil --test-key` as 02-install-nvidia-drivers.sh
+# (it exits non-zero when the key IS enrolled: capture, don't test).
+mok_state() { # key
+  local out
+  if ! root test -f "$1"; then
+    printf 'missing'
+    return 0
+  fi
+  out=$(root mokutil --test-key "$1" 2>&1 || true)
+  case $out in
+    *"already enrolled"*) printf 'enrolled' ;;
+    *"enrollment request"*) printf 'enrollment pending (next boot)' ;;
+    *) printf 'not enrolled' ;;
+  esac
+}
+
+# One line per device with an update: "name: current -> newest".
+fwupd_summary() { # get-updates --json output
+  python3 -I - "$1" <<'PY'
+import json, sys
+try:
+    devices = json.loads(sys.argv[1]).get("Devices", [])
+except ValueError:
+    print("- Firmware: updates pending (unreadable fwupd output)")
+    sys.exit(0)
+for d in sorted(devices, key=lambda d: d.get("Name", "")):
+    name = d.get("Name", "?")
+    have = d.get("Version", "?")
+    newest = (d.get("Releases") or [{}])[0].get("Version", "?")
+    print(f"- Firmware `{name}`: {have} -> {newest}")
+PY
+}
+
+# Pending firmware updates, from fwupd's cached metadata (no download).
+firmware_updates() {
+  local out rc=0
+  out=$(timeout 120 sudo -n fwupdmgr get-updates --json \
+    --no-unreported-check --no-metadata-check </dev/null 2>/dev/null) ||
+    rc=$?
+  case $rc in
+    2) echo "- Firmware: up to date" ;;
+    0) fwupd_summary "$out" ;;
+    *) echo "- Firmware: unknown (fwupdmgr exit $rc)" ;;
+  esac
+}
+
+system_01_02() {
   local k n
   local -a upgrade_opts
-  subheading "01-update, 02-nvidia"
+  subheading "01-update-system, 02-install-nvidia-drivers"
   printf -- '- Running kernel: `%s`\n' "$(uname -r)"
   while IFS= read -r k; do
     printf -- '- Kernel `%s`: headers %s, %s\n' "$k" \
@@ -623,25 +699,28 @@ system_kernels() {
   if have mokutil; then
     k=$(mokutil --sb-state 2>/dev/null | awk 'NR == 1' || true)
     printf -- '- Secure Boot: %s\n' "${k:-unknown}"
+    k=$(settings 02-install-nvidia-drivers MOK_KEY)
+    printf -- '- DKMS signing key `%s`: %s\n' "$k" "$(mok_state "$k")"
   fi
   if have dkms; then
     while IFS= read -r k; do
       if [[ -n $k ]]; then printf -- '- DKMS: `%s`\n' "$k"; fi
     done < <(dkms status 2>/dev/null | sort || true)
   fi
-  load upgrade_opts 01-update APT_UPGRADE_OPTS
+  load upgrade_opts 01-update-system APT_UPGRADE_OPTS
   # A simulation, against the package lists as they are now.
   n=$(apt-get -s -o Debug::NoLocking=1 "${upgrade_opts[@]}" full-upgrade \
     2>/dev/null | grep -c '^Inst ' || true)
   printf -- '- Pending upgrades: %s\n' "${n:-0}"
+  if have fwupdmgr; then firmware_updates; fi
 }
 
 system_03() {
-  local locale norm lang vendor product d found=""
-  subheading "03-system"
+  local locale norm lang vendor product d found="" line status
+  subheading "03-config-system"
   printf -- '- Default target: `%s`\n' "$(systemctl get-default)"
 
-  locale=$(settings 03-system LOCALE)
+  locale=$(settings 03-config-system LOCALE)
   norm="${locale%%.*}.$(tr '[:upper:]' '[:lower:]' <<<"${locale#*.}" |
     tr -d -)"
   if grep -qix "$norm" <<<"$(locale -a 2>/dev/null)"; then
@@ -652,13 +731,19 @@ system_03() {
   lang=$(grep -E '^LANG=' /etc/default/locale 2>/dev/null || true)
   printf -- '- /etc/default/locale: `%s`\n' "${lang:-no LANG}"
 
-  printf -- '- ufw: `%s`\n' "$(grep -E '^ENABLED=' /etc/ufw/ufw.conf \
-    2>/dev/null || echo 'not installed')"
-  grep -E '^DEFAULT_(INPUT|OUTPUT)_POLICY=' /etc/default/ufw 2>/dev/null |
-    sed 's/.*/- ufw `&`/' || true
+  # ufw's own view, rules included (07's Incus rules among them).
+  if have ufw; then
+    status=$(root ufw status verbose 2>/dev/null || echo "unreadable")
+    while IFS= read -r line; do
+      line=$(tr -s ' ' <<<"$line")
+      if [[ -n ${line// /} ]]; then printf -- '- ufw: `%s`\n' "$line"; fi
+    done <<<"$status"
+  else
+    echo "- ufw: not installed"
+  fi
 
-  vendor=$(settings 03-system BT_VENDOR)
-  product=$(settings 03-system BT_PRODUCT)
+  vendor=$(settings 03-config-system BT_VENDOR)
+  product=$(settings 03-config-system BT_PRODUCT)
   for d in /sys/bus/usb/devices/*; do
     [[ -f $d/idVendor && -f $d/idProduct ]] || continue
     [[ $(<"$d/idVendor") == "$vendor" ]] || continue
@@ -674,13 +759,40 @@ system_03() {
     "$(describe /etc/udev/rules.d/81-disable-internal-bt.rules)"
 }
 
-system_04() {
-  local vols v
-  subheading "04-storage"
-  # The same volume and option matching as 04-storage.sh.
-  vols=$(awk '!/^[[:space:]]*(#|$)/ && NF >= 3 {
+# Volumes in a crypttab, each with whether it has discard: the same
+# matching as 04-config-storage.sh.
+crypttab_discard() {
+  awk '!/^[[:space:]]*(#|$)/ && NF >= 3 {
       print $1 ": " ($4 ~ /(^|,)discard(,|$)/ ? "discard" : "no discard")
-    }' /etc/crypttab 2>/dev/null || true)
+    }'
+}
+
+# The crypttab inside a kernel's initramfs: what is used at boot.
+initramfs_discard() { # kernel
+  local initrd="/boot/initrd.img-$1" work ct vols
+  if [[ ! -e $initrd ]]; then
+    printf 'no initramfs'
+    return 0
+  fi
+  work=$(root mktemp -d)
+  root unmkinitramfs "$initrd" "$work" >/dev/null 2>&1 || true
+  ct=$(root find "$work" -path '*cryptroot/crypttab' -print -quit \
+    2>/dev/null || true)
+  if [[ -z $ct ]]; then
+    vols="no crypttab inside"
+  else
+    vols=$(root cat "$ct" | crypttab_discard | paste -sd';' - |
+      sed 's/;/; /g')
+  fi
+  # mktemp's own path, so nothing else can be removed here.
+  if [[ $work == /tmp/tmp.* ]]; then root rm -rf -- "$work"; fi
+  printf '%s' "${vols:-no volumes}"
+}
+
+system_04() {
+  local vols v k lv stats blocks reserved
+  subheading "04-config-storage"
+  vols=$(crypttab_discard </etc/crypttab 2>/dev/null || true)
   if [[ -z $vols ]]; then
     echo "- crypttab: no encrypted volumes"
   else
@@ -688,20 +800,32 @@ system_04() {
       <<<"$vols"
   fi
   printf -- '- /etc/crypttab.bak: %s\n' "$(describe /etc/crypttab.bak)"
-  # (free - available) / total: what tune2fs reports, give or take
-  # rounding (tune2fs itself needs root).
-  printf -- '- Root filesystem reserve: %s\n' "$(stat -f -c '%b %f %a' / |
-    awk '{ printf "%.1f%%", ($2 - $3) * 100 / $1 }')"
+  while IFS= read -r k; do
+    printf -- '- initramfs `%s`: %s\n' "$k" "$(initramfs_discard "$k")"
+  done < <(kernels)
+
+  # The same numbers 04 reads from tune2fs, rounded the same way.
+  lv=$(settings 04-config-storage ROOT_LV)
+  if [[ -e $lv ]]; then
+    stats=$(root tune2fs -l "$lv" 2>/dev/null || true)
+    blocks=$(awk -F: '$1 == "Block count" { gsub(/ /, "", $2); print $2 }' \
+      <<<"$stats")
+    reserved=$(awk -F: '$1 == "Reserved block count" {
+        gsub(/ /, "", $2); print $2 }' <<<"$stats")
+    if [[ -n $blocks && -n $reserved ]]; then
+      printf -- '- ext4 reserve on `%s`: %s%% (%s blocks)\n' "$lv" \
+        "$(((reserved * 100 + blocks / 2) / blocks))" "$reserved"
+    else
+      printf -- '- ext4 reserve on `%s`: unreadable\n' "$lv"
+    fi
+  else
+    printf -- '- ext4 reserve: `%s` not found\n' "$lv"
+  fi
 }
 
-system_06_to_11() {
-  local mapper plugin sbc stamp built pw bridge fam dir font_dir name app
-  local -a fams flatpaks
-  subheading "06-keyd"
-  mapper=$(settings 06-keyd MAPPER_BIN)
-  printf -- '- `%s`: %s\n' "$mapper" "$(describe "$mapper")"
-
-  subheading "07-audio"
+system_05() {
+  local sbc plugin pw stamp built
+  subheading "05-config-bt-audio"
   if dpkg-query -W libspa-0.2-bluetooth >/dev/null 2>&1; then
     sbc=$(dpkg -L libspa-0.2-bluetooth |
       grep 'libspa-codec-bluez5-sbc\.so$' || true)
@@ -712,13 +836,16 @@ system_06_to_11() {
     echo "- AAC plugin: libspa-0.2-bluetooth not installed"
     pw="none"
   fi
-  stamp=$(settings 07-audio STAMP)
+  stamp=$(settings 05-config-bt-audio STAMP)
   built=$(cat "$stamp" 2>/dev/null || echo "never")
   printf -- '- AAC plugin built for PipeWire `%s` (installed: `%s`)\n' \
     "$built" "$pw"
+}
 
-  subheading "08-qemu-vmm"
-  bridge=$(settings 08-qemu-vmm BRIDGE)
+system_07() {
+  local bridge fam v keyring
+  subheading "07-dev-toolshed"
+  bridge=$(settings 07-dev-toolshed BRIDGE)
   if ip link show "$bridge" >/dev/null 2>&1; then
     printf -- '- Bridge `%s`: present\n' "$bridge"
   else
@@ -726,52 +853,73 @@ system_06_to_11() {
   fi
   printf -- '- Incus storage pool `default`: %s\n' \
     "$(describe /var/lib/incus/storage-pools/default)"
-
-  subheading "09-podman"
+  if have incus; then
+    for fam in ipv4 ipv6; do
+      v=$(root incus network get "$bridge" "$fam.firewall" 2>/dev/null ||
+        echo '?')
+      printf -- '- Incus `%s` %s.firewall: `%s`\n' "$bridge" "$fam" \
+        "${v:-unset (on)}"
+    done
+  fi
   printf -- '- /etc/subuid: `%s`\n' \
     "$(grep "^$USER:" /etc/subuid 2>/dev/null || echo none)"
   printf -- '- /etc/subgid: `%s`\n' \
     "$(grep "^$USER:" /etc/subgid 2>/dev/null || echo none)"
+  keyring=$(settings 07-dev-toolshed SUBLIME_KEYRING)
+  printf -- '- `%s`: %s\n' "$keyring" "$(describe "$keyring")"
+}
 
-  subheading "10-fonts"
-  load fams 10-fonts MONASPACE_FAMILIES
-  font_dir=$(settings 10-fonts FONT_DIR)
+system_08_09() {
+  local mapper fam dir font_dir
+  local -a fams
+  subheading "08-keyd"
+  mapper=$(settings 08-keyd MAPPER_BIN)
+  printf -- '- `%s`: %s\n' "$mapper" "$(describe "$mapper")"
+
+  subheading "09-fonts"
+  load fams 09-fonts MONASPACE_FAMILIES
+  font_dir=$(settings 09-fonts FONT_DIR)
   for fam in "${fams[@]}"; do
     dir="$font_dir/monaspace-${fam,,}"
     printf -- '- `%s`: %s, %s file(s)\n' "$(pretty "$dir")" \
       "$(describe "$dir")" "$(find "$dir" -type f 2>/dev/null | wc -l)"
   done
+}
 
-  subheading "11-apps"
+system_10() {
+  local keyring app
+  local -a flatpaks
+  subheading "10-apps"
   printf -- '- Foreign architectures: `%s`\n' \
     "$(dpkg --print-foreign-architectures | paste -sd' ' -)"
-  for name in SUBLIME_KEYRING MOZILLA_KEYRING; do
-    dir=$(settings 11-apps "$name")
-    printf -- '- `%s`: %s\n' "$dir" "$(describe "$dir")"
-  done
-  if have flatpak; then
-    printf -- '- Flatpak remotes: `%s`\n' "$(flatpak remotes \
-      --columns=name,options 2>/dev/null | sort | tr '\t\n' ': ' |
-      sed 's/ $//')"
-    load flatpaks 11-apps FLATPAKS
-    for app in "${flatpaks[@]}"; do
-      if flatpak info "$app" >/dev/null 2>&1; then
-        printf -- '- Flatpak `%s`: installed\n' "$app"
-      else
-        printf -- '- Flatpak `%s`: not installed\n' "$app"
-      fi
-    done
-  else
+  keyring=$(settings 10-apps MOZILLA_KEYRING)
+  printf -- '- `%s`: %s\n' "$keyring" "$(describe "$keyring")"
+  if ! have flatpak; then
     echo "- flatpak not installed"
+    return 0
   fi
+  printf -- '- Flatpak remotes: `%s`\n' "$(flatpak remotes \
+    --columns=name,options 2>/dev/null | sort | tr '\t\n' ': ' |
+    sed 's/ $//')"
+  load flatpaks 10-apps FLATPAKS
+  for app in "${flatpaks[@]}"; do
+    if flatpak info "$app" >/dev/null 2>&1; then
+      printf -- '- Flatpak `%s`: installed\n' "$app"
+    else
+      printf -- '- Flatpak `%s`: not installed\n' "$app"
+    fi
+  done
 }
 
 section_system() {
   heading "System"
-  system_kernels
+  system_01_02
   system_03
   system_04
-  system_06_to_11
+  system_05
+  system_07
+  system_08_09
+  system_10
   subheading "All scripts"
   printf -- '- Backups in ~/.local/state/dotfiles-bak: %s file(s)\n' \
     "$(find "$HOME/.local/state/dotfiles-bak" -type f 2>/dev/null |
@@ -785,8 +933,8 @@ section_system() {
 section_home() {
   local d
   local -a create remove
-  load create 00-default-dirs CREATE
-  load remove 00-default-dirs DIRS
+  load create 00-set-default-dirs CREATE
+  load remove 00-set-default-dirs DIRS
   heading "Home folders"
   for d in "${create[@]}"; do
     printf -- '- `~/%s`: %s (kept)\n' "$d" "$(describe "$HOME/$d")"
@@ -809,20 +957,8 @@ section_home() {
 section_not_captured() {
   heading "Not captured"
   cat <<'EOF'
-Check these by hand; reading them needs root or a live service:
-
-- ufw rules, including 08's rules for the Incus bridge
-  (`sudo ufw status verbose`)
-- Incus' own firewall on the bridge, off by 08
-  (`incus network get incusbr0 ipv4.firewall`, needs incus-admin in the
-  current session)
-- whether the DKMS signing key is enrolled
-  (`sudo mokutil --test-key /var/lib/dkms/mok.pub`)
-- the exact ext4 reserve (`sudo tune2fs -l /dev/vg0/root`)
-- that the initramfs has crypttab's `discard` (rebuilt by 04)
-- pending firmware updates (`fwupdmgr get-updates`)
 - Dolphin's Information panel (21): it lives in Dolphin's window state,
-  which also changes on its own
+  which also changes on its own, so it can't be compared
 EOF
 }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 20-kde-config-font.sh
+# 20-config-kde-font.sh
 #
 # Inter as the UI font everywhere for this user: KDE/Qt apps, window
 # titles, GTK apps (Firefox, GNOME apps) and anything that asks fontconfig
@@ -9,7 +9,7 @@
 # fixed-width font is left alone; Inter is not monospaced.
 #
 # Usage:
-#   ./20-kde-config-font.sh [--dry-run] [--yes]
+#   ./20-config-kde-font.sh [--dry-run] [--yes]
 #
 #   Run inside Plasma. Log out and back in afterwards so every app picks
 #   it up.
@@ -57,7 +57,7 @@ GTK_FONT="$FAMILY,  $SIZE" # same spacing Plasma's GTK sync uses
 check_font() {
   step "Font"
   grep -qxF "$FAMILY" <<<"$(fc-list : family | tr ',' '\n')" ||
-    die "'$FAMILY' is not installed (run 10-fonts.sh)"
+    die "'$FAMILY' is not installed (run 09-fonts.sh)"
   ok "$FAMILY $SIZE (small text: $SMALL_SIZE)"
 }
 

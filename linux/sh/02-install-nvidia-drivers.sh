@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 02-nvidia.sh
+# 02-install-nvidia-drivers.sh
 #
 # NVIDIA open kernel driver from NVIDIA's CUDA repo, built by DKMS for
 # every installed kernel and signed for Secure Boot. Does nothing on a
 # machine without an NVIDIA GPU.
 #
 # Usage:
-#   ./02-nvidia.sh [--dry-run] [--yes]
+#   ./02-install-nvidia-drivers.sh [--dry-run] [--yes]
 #
 # Notes:
 #   * Headers follow every new kernel (linux-headers-amd64), so DKMS can
@@ -180,9 +180,9 @@ finish() {
     die "$PROBLEMS problem(s) above;" \
       "fix them before booting the affected kernel(s)"
   fi
-  # /run/reboot-required: 01-update.sh leaves the reboot for a new kernel
-  # to this script, whose own steps may all be skips by then (DKMS builds
-  # the module while the kernel installs).
+  # /run/reboot-required: 01-update-system.sh leaves the reboot for a new
+  # kernel to this script, whose own steps may all be skips by then (DKMS
+  # builds the module while the kernel installs).
   if ((_N_CHANGED || MOK_PENDING)) || [[ -e /run/reboot-required ]]; then
     ((!DRY_RUN)) || return 0
     step "Next"

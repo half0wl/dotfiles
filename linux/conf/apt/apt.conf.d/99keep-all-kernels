@@ -1,4 +1,4 @@
-// Keep every kernel ever installed. Symlinked from dotfiles/linux/conf by 03-system.sh.
+// Keep every kernel ever installed. Symlinked from dotfiles/linux/conf by 03-config-system.sh.
 // linux-kbuild is kept too: DKMS needs it to rebuild modules for that kernel.
 APT::NeverAutoRemove {
   "^linux-image-.*";

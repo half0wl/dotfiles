@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 23-kde-config-desktop.sh
+# 23-config-kde-desktop.sh
 #
 # The rest of the Plasma desktop: animation speed, key repeat, mice,
 # screen locking, session restore, Night Color, the monitor mode/scale,
 # and app launch shortcuts that should stay unbound.
 #
 # Usage:
-#   ./23-kde-config-desktop.sh [--dry-run] [--yes]
+#   ./23-config-kde-desktop.sh [--dry-run] [--yes]
 #
 #   Run inside Plasma. Tweak the Settings block below, then re-run. Log
 #   out and back in afterwards for keyboard, mouse and session settings.
@@ -16,7 +16,7 @@
 # Notes:
 #   * Themes and panel layouts are not managed; set them in System
 #     Settings.
-#   * Caps Lock -> Esc is done by keyd (06-keyd.sh), not here.
+#   * Caps Lock -> Esc is done by keyd (08-keyd.sh), not here.
 
 set -euo pipefail
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_lib.sh"

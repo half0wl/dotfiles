@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 06-keyd.sh
+# 08-keyd.sh
 #
 # macOS-style keyboard with keyd: Cmd = Ctrl (plus Mac overrides), Option
 # = word-wise movement, Caps Lock = Esc, and per-app overrides through
 # keyd-application-mapper (started at login by Plasma's autostart).
 #
 # Usage:
-#   ./06-keyd.sh [--dry-run] [--yes]
+#   ./08-keyd.sh [--dry-run] [--yes]
 #
 # Config (symlinked from conf/):
 #   ~/.config/keyd/default.conf      keyd/default.conf

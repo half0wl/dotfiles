@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 10-fonts.sh
+# 09-fonts.sh
 #
-# Popular fonts from apt, plus Monaspace (Nerd Font build) from GitHub.
+# Popular fonts from apt, plus a coding font with icon glyphs from GitHub.
+# The full catalog is under Fonts below.
 #
 # Usage:
-#   ./10-fonts.sh [--dry-run] [--yes] [--force]
+#   ./09-fonts.sh [--dry-run] [--yes] [--force]
 #
 #   --force   re-download Monaspace even if it is installed
 #
@@ -16,6 +17,19 @@
 #   * The Nerd Font build's family names end in " NF", e.g.
 #     "Monaspace Krypton NF"; use that exact name in configs.
 #   * A Monaspace family is only downloaded when fc-list does not know it.
+#
+# Fonts:
+#   UI / sans        apt: Inter (the modern UI default), Roboto (Android /
+#                    Material), Open Sans, Lato, Source Sans 3, Ubuntu
+#   Monospace        apt: JetBrains Mono, Fira Code, Cascadia Code, Hack
+#                    GitHub: Monaspace Krypton NF (githubnext/monaspace,
+#                    Nerd Font build; other families: Argon, Neon, Radon,
+#                    Xenon)
+#   Coverage         apt: Noto (core, CJK, color emoji), so every script
+#                    and emoji renders instead of tofu boxes
+#   MS stand-ins     apt: Liberation (Arial / Times / Courier), Carlito
+#                    (Calibri), Caladea (Cambria), DejaVu, so documents
+#                    and web pages lay out as intended
 
 set -euo pipefail
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_lib.sh"
@@ -26,11 +40,11 @@ source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_lib.sh"
 
 APT_FONTS=(
   # UI / sans
-  fonts-inter # Inter: the modern UI default
-  fonts-roboto # Android / Material
+  fonts-inter
+  fonts-roboto
   fonts-open-sans
   fonts-lato
-  fonts-adobe-sourcesans3 # Source Sans 3
+  fonts-adobe-sourcesans3
   fonts-ubuntu
 
   # Monospace / coding
@@ -44,16 +58,15 @@ APT_FONTS=(
   fonts-noto-cjk
   fonts-noto-color-emoji
 
-  # Metric-compatible stand-ins for MS fonts (documents and web pages lay
-  # out correctly): Liberation = Arial/Times/Courier, Carlito = Calibri,
-  # Caladea = Cambria
+  # Metric-compatible stand-ins for proprietary fonts
   fonts-liberation
   fonts-crosextra-carlito
   fonts-crosextra-caladea
   fonts-dejavu
 )
 
-# Monaspace families to install: Argon Krypton Neon Radon Xenon
+# Families of the GitHub font to install (choices in the catalog above).
+MONASPACE_NAME="Monaspace"
 MONASPACE_FAMILIES=(
   Krypton
 )
@@ -99,13 +112,13 @@ _install_monaspace() { # tag families...
   base="https://github.com/$MONASPACE_REPO/releases/download"
   tmp=$(mktemp -d)
   trap 'rm -rf -- "$tmp"' EXIT
-  curl -fsSL -o "$tmp/monaspace.zip" "$base/$tag/$asset"
+  curl -fsSL -o "$tmp/font.zip" "$base/$tag/$asset"
   for fam; do
     dest="$FONT_DIR/monaspace-${fam,,}"
     rm -rf -- "$dest"
     mkdir -p -- "$dest"
     # -j: drop the zip's folders, keep only this family's .otf files
-    unzip -qjo "$tmp/monaspace.zip" "*/Monaspace $fam/*.otf" -d "$dest"
+    unzip -qjo "$tmp/font.zip" "*/$MONASPACE_NAME $fam/*.otf" -d "$dest"
   done
 }
 
@@ -115,22 +128,23 @@ latest_monaspace_tag() {
 }
 
 install_monaspace() {
-  step "Monaspace"
+  step "Coding font (GitHub)"
   local fam
   local -a missing=()
   for fam in "${MONASPACE_FAMILIES[@]}"; do
-    if ((FORCE)) || ! have_family "Monaspace $fam NF"; then
+    if ((FORCE)) || ! have_family "$MONASPACE_NAME $fam NF"; then
       missing+=("$fam")
     else
-      skip "Monaspace $fam NF already installed"
+      skip "$MONASPACE_NAME $fam NF already installed"
     fi
   done
   ((${#missing[@]})) || return 0
 
   local tag
   tag=$(latest_monaspace_tag)
-  [[ -n $tag ]] || die "could not find the latest Monaspace release"
-  apply "Monaspace ${missing[*]} NF $tag (~330 MB download)" \
+  [[ -n $tag ]] ||
+    die "could not find the latest $MONASPACE_NAME release"
+  apply "$MONASPACE_NAME ${missing[*]} NF $tag (~330 MB download)" \
     _install_monaspace "$tag" "${missing[@]}"
   FONTS_CHANGED=1
 }
@@ -148,7 +162,7 @@ refresh_cache() {
 }
 
 main() {
-  lib_init "apt fonts and Monaspace NF" "$@"
+  lib_init "Fonts from apt and GitHub" "$@"
   parse_args
   require_user
   need_sudo

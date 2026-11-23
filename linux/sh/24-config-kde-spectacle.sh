@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 24-kde-config-spectacle.sh
+# 24-config-kde-spectacle.sh
 #
 # Spectacle: where screenshots and screen recordings are saved, and how
 # they are named. Creates the folders if they are missing.
 #
 # Usage:
-#   ./24-kde-config-spectacle.sh [--dry-run] [--yes]
+#   ./24-config-kde-spectacle.sh [--dry-run] [--yes]
 #
 #   Tweak the Settings block below, then re-run.
 #

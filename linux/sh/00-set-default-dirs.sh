@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 00-default-dirs.sh
+# 00-set-default-dirs.sh
 #
 # Fewer folders in ~: point the XDG user dirs at ~/Documents (music,
 # pictures, videos) or hidden folders (templates, public share), then remove
@@ -11,7 +11,7 @@
 # listed and only removed after you confirm.
 #
 # Usage:
-#   ./00-default-dirs.sh [--dry-run] [--yes]
+#   ./00-set-default-dirs.sh [--dry-run] [--yes]
 #
 #   --yes also removes folders that are not empty, without asking.
 #   Log out and back in afterwards: running apps keep the old locations.

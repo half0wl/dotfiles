@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # https://github.com/half0wl/dotfiles
 #
-# 26-app-config-defaults.sh
+# 27-config-app-mime-defaults.sh
 #
 # Sets default apps to open files with. An app that is not installed
 # gets a warning and its file types are left alone. The full mapping is
 # under File types below.
 #
 # Usage:
-#   ./26-app-config-defaults.sh [--dry-run] [--yes]
+#   ./27-config-app-mime-defaults.sh [--dry-run] [--yes]
 #
 #   Edit the Settings block below, then re-run.
 #
@@ -223,7 +223,7 @@ set_defaults() {
 configure_gearlever() {
   step "AppImages: Gear Lever"
   if ! desktop_file "$GEARLEVER_DESKTOP" >/dev/null; then
-    warn "Gear Lever is not installed (11-apps.sh installs it);" \
+    warn "Gear Lever is not installed (10-apps.sh installs it);" \
       "AppImage defaults left alone"
     return 0
   fi
@@ -233,11 +233,11 @@ configure_gearlever() {
 configure_neovim() {
   step "Text and code: Neovim in Ghostty"
   local -a missing=()
-  have ghostty || missing+=("Ghostty (11-apps.sh installs it)")
+  have ghostty || missing+=("Ghostty (07-dev-toolshed.sh installs it)")
   if [[ ! -x $MISE_BIN ]]; then
-    missing+=("mise (05-shell.sh installs it)")
+    missing+=("mise (07-dev-toolshed.sh installs it)")
   elif ! mise_at_root which nvim >/dev/null 2>&1; then
-    missing+=("Neovim (05-shell.sh installs it)")
+    missing+=("Neovim (07-dev-toolshed.sh installs it)")
   fi
   if ((${#missing[@]})); then
     local m
@@ -289,7 +289,7 @@ configure_vlc() {
   step "Video and audio: VLC"
   local file
   if ! file=$(desktop_file "$VLC_DESKTOP"); then
-    warn "VLC is not installed (11-apps.sh installs it);" \
+    warn "VLC is not installed (10-apps.sh installs it);" \
       "video and audio defaults left alone"
     return 0
   fi
