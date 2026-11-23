@@ -3,9 +3,8 @@
 #
 # 11-apps.sh
 #
-# Desktop apps and their apt repos: Ghostty, Sublime Merge, Firefox
-# (Mozilla's build), Steam, Little Snitch, Flatpak + Flathub (Gear
-# Lever), and the AI CLIs (Claude Code, Ollama, pi).
+# Install essential applications plus the apt repos, signing keys and configs
+# they need. The full catalog is under Apps below.
 #
 # Usage:
 #   ./11-apps.sh [--dry-run] [--yes]
@@ -22,6 +21,19 @@
 #   * Steam's repo and key are owned by the steam-launcher package.
 #   * Firefox prefs are linked by 25-app-config-firefox.sh.
 #   * Installers piped from curl only run when the tool is missing.
+#
+# Apps:
+#   Sublime Merge    apt (Sublime HQ repo)
+#   Firefox          apt (Mozilla repo, pinned)
+#   VLC              apt (Debian)
+#   Flatpak          apt (Debian), with the Discover backend
+#   Steam            .deb (steam-launcher)
+#   Little Snitch    .deb (obdev.at)
+#   Ghostty          installer script (mkasberg/ghostty-ubuntu)
+#   Gear Lever       Flatpak (Flathub)
+#   Claude Code      curl installer (claude.ai)
+#   Ollama           curl installer (ollama.com)
+#   pi               curl installer (pi.dev)
 
 set -euo pipefail
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_lib.sh"
@@ -50,6 +62,7 @@ APT_APPS=(
   plasma-discover-backend-flatpak
   sublime-merge
   firefox
+  vlc
 )
 
 FLATHUB_URL="https://dl.flathub.org/repo/flathub.flatpakrepo"
@@ -125,7 +138,7 @@ install_apt_apps() {
   apt_ensure "${APT_APPS[@]}"
   deb_ensure steam-launcher "$STEAM_DEB_URL"
   deb_ensure littlesnitch "$LITTLESNITCH_DEB_URL"
-  if pkg_installed littlesnitch || ((!DRY_RUN)); then
+  if pkg_installed littlesnitch || ((! DRY_RUN)); then
     systemd_enable littlesnitch --now
   fi
   if pkg_installed ghostty; then
@@ -194,7 +207,7 @@ install_ai_tools() {
 }
 
 main() {
-  lib_init "Ghostty, Sublime Merge, Firefox, Steam, Flatpak, AI CLIs" "$@"
+  lib_init "Essential applications" "$@"
   no_extra_args
   require_user
   need_sudo
