@@ -120,11 +120,15 @@ fi
 # Output
 # ---------------------------------------------------------------------------
 
+# Lines are prefixed with _INDENT. A helper that nests its output under a
+# header sets `local _INDENT='  '`, which resets when the helper returns.
+_INDENT=""
+
 _line() { # color marker message...
   local color=$1 mark=$2
   shift 2
   _spin_stop
-  printf '%s%s%s %s\n' "$color" "$mark" "$C_OFF" "$*"
+  printf '%s%s%s%s %s\n' "$_INDENT" "$color" "$mark" "$C_OFF" "$*"
 }
 
 step() {
@@ -146,7 +150,7 @@ changed() {
 skip() {
   _N_SKIPPED=$((_N_SKIPPED + 1))
   _spin_stop
-  printf '%s[ - ] %s%s\n' "$C_GREY" "$*" "$C_OFF"
+  printf '%s%s[ - ] %s%s\n' "$_INDENT" "$C_GREY" "$*" "$C_OFF"
 }
 
 would() {
@@ -161,7 +165,7 @@ warn() {
 
 detail() {
   _spin_stop
-  printf '      %s%s%s\n' "$C_GREY" "$*" "$C_OFF"
+  printf '%s      %s%s%s\n' "$_INDENT" "$C_GREY" "$*" "$C_OFF"
 }
 
 # Shorten $HOME to ~ for display.
@@ -187,8 +191,8 @@ _spin_start() { # message
         elapsed=''
       fi
       frame=${frames[i++ % ${#frames[@]}]}
-      printf '\r\e[2K%s[%s]%s %s%s' \
-        "$C_BPURPLE" "$frame" "$C_OFF" "$msg" "$elapsed"
+      printf '\r\e[2K%s%s[%s]%s %s%s' \
+        "$_INDENT" "$C_BPURPLE" "$frame" "$C_OFF" "$msg" "$elapsed"
       sleep 0.1
     done
   ) &
@@ -227,7 +231,7 @@ _run_logged() { # message cmd...
   _RUN_RC=$rc
   if ((rc)); then
     error "$msg (exit $rc)"
-    tail -n 20 "$log" | sed "s/^/      ${C_RED}│${C_OFF} /" >&2
+    tail -n 20 "$log" | sed "s/^/$_INDENT      ${C_RED}│${C_OFF} /" >&2
     detail "full log: $log" >&2
     return 0
   fi
@@ -529,21 +533,38 @@ pkg_installed() {
   [[ $status == ii* ]]
 }
 
-# apt_ensure PKG... -- install whichever packages are missing.
+# apt_ensure PKG... -- install whichever packages are missing. Reports
+# one line per package, grouped under "already installed" and "will
+# install"; the missing ones go to apt-get in a single call.
 apt_ensure() {
   local p
-  local -a missing=()
-  for p; do pkg_installed "$p" || missing+=("$p"); done
-  if ((${#missing[@]} == 0)); then
-    if (($# <= 4)); then
-      skip "apt: $* already installed"
-    else
-      skip "apt: all $# packages already installed"
-    fi
+  local -a present=() missing=()
+  for p; do
+    if pkg_installed "$p"; then present+=("$p"); else missing+=("$p"); fi
+  done
+
+  if ((${#missing[@]})); then
+    info "apt:"
+  else
+    _line "$C_GREY" '[ - ]' "apt:"
+  fi
+
+  local _INDENT='  '
+  if ((${#present[@]})); then
+    printf '%s%salready installed:%s\n' "$_INDENT" "$C_GREY" "$C_OFF"
+    for p in "${present[@]}"; do skip "$p"; done
+  fi
+  ((${#missing[@]})) || return 0
+
+  printf '%s%swill install:%s\n' "$_INDENT" "$C_GREY" "$C_OFF"
+  if ((DRY_RUN)); then
+    for p in "${missing[@]}"; do would "$p"; done
     return 0
   fi
-  apply "apt: install ${missing[*]}" \
+  _run_logged "apt: install ${missing[*]}" \
     sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${missing[@]}"
+  ((_RUN_RC == 0)) || return "$_RUN_RC"
+  for p in "${missing[@]}"; do changed "$p"; done
 }
 
 apt_update() {
