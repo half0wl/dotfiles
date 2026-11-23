@@ -106,9 +106,18 @@ subheading() { printf '\n### %s\n\n' "$1"; }
 settings() {
   local file="$SH/$1.sh" block
   [[ -f $file ]] || die "sh/$1.sh not found"
-  block=$(awk '/^# Settings$/ { f = 1; next } /^# Steps$/ { f = 0 } f' \
-    "$file")
+  # The block sits between banners: "# ---" / "# Settings" / "# ---",
+  # then everything up to the next "# ---" banner, whatever that next
+  # section is called.
+  block=$(awk '
+      /^# Settings$/ { f = 1; opening = 1; next }
+      f && opening && /^# -+$/ { opening = 0; next }
+      f && /^# -+$/ { exit }
+      f' "$file")
   [[ -n $block ]] || die "sh/$1.sh has no Settings block"
+  # Never run a script's steps: a block that reaches main is misparsed.
+  [[ $block != *'main "$@"'* ]] ||
+    die "sh/$1.sh: its Settings block runs into the steps; not running it"
   bash --norc --noprofile -c "$block"$'\n'"declare -p $2 >/dev/null \
     2>&1 || exit 3"$'\n'"printf '%s\n' \"\${$2[@]}\"" ||
     die "$2 is not set in sh/$1.sh's Settings block"
@@ -479,6 +488,39 @@ section_kde() {
     printf -- '- Spectacle folder `%s`: %s\n' "$(pretty "$v")" \
       "$(describe "$v")"
   done
+}
+
+# ---------------------------------------------------------------------------
+# Default apps (27)
+# ---------------------------------------------------------------------------
+
+section_mime() {
+  local file="$CFG/mimeapps.list" managed=" " name id count counts
+  for name in GEARLEVER_DESKTOP NVIM_DESKTOP OKULAR_DESKTOP VLC_DESKTOP; do
+    managed+="$(settings 27-config-app-mime-defaults "$name") "
+  done
+  heading "Default apps"
+  if [[ ! -f $file ]]; then
+    printf -- '- `%s`: missing\n' "$(pretty "$file")"
+    return 0
+  fi
+  # [Default Applications] holds "type=app.desktop;other.desktop;" and
+  # the first entry wins: one line per app, with how many types it opens.
+  counts=$(awk -F= '
+      /^\[/ { f = ($0 == "[Default Applications]"); next }
+      f && NF >= 2 { split($2, a, ";"); if (a[1] != "") n[a[1]]++ }
+      END { for (id in n) print id, n[id] }' "$file" | sort)
+  if [[ -z $counts ]]; then
+    echo "- none set"
+    return 0
+  fi
+  while read -r id count; do
+    if [[ $managed == *" $id "* ]]; then
+      printf -- '- `%s`: %s type(s) (set by 27)\n' "$id" "$count"
+    else
+      printf -- '- `%s`: %s type(s)\n' "$id" "$count"
+    fi
+  done <<<"$counts"
 }
 
 # ---------------------------------------------------------------------------
@@ -972,6 +1014,7 @@ snapshot() {
   echo "Repo: \`$(pretty "$REPO")\`"
   section_links
   section_kde
+  section_mime
   section_packages
   section_services
   section_user
