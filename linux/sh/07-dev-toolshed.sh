@@ -40,12 +40,14 @@
 #     package never enables them on a fresh install; this checks anyway.
 #     Want the Docker-compatible API socket on demand? Run
 #     `systemctl --user start podman.socket` (not `enable`).
+#   * smartmontools' daemon (smartd) is stopped and disabled; run
+#     `smartctl` by hand when you want a drive's health.
 #   * Rootless Podman needs a subordinate UID/GID range for your user in
 #     /etc/subuid and /etc/subgid; one is added if missing.
 #
 # Tools:
 #   CLI tools        apt (Debian): git, curl, make, gcc, ripgrep, fd-find,
-#                    socat, bubblewrap, libfuse2t64
+#                    socat, bubblewrap, libfuse2t64, smartmontools
 #   mise             curl installer (mise.run), with the tools it pins in
 #                    conf/mise/config.toml (neovim, tmux, gh, node, ...)
 #   Sublime Merge    apt (Sublime HQ repo)
@@ -73,6 +75,11 @@ CLI_PACKAGES=(
   make
   gcc
   ripgrep
+  smartmontools
+)
+# Services the CLI packages enable on install that should stay off.
+CLI_UNITS=(
+  smartmontools.service
 )
 
 MISE_BIN="$HOME/.local/bin/mise"
@@ -126,6 +133,17 @@ SUB_ID_COUNT=65536
 install_packages() {
   step "Packages"
   apt_ensure "${CLI_PACKAGES[@]}"
+
+  # CLI only: no daemons left running.
+  local unit
+  for unit in "${CLI_UNITS[@]}"; do
+    if systemctl is-enabled --quiet "$unit" 2>/dev/null ||
+      systemctl is-active --quiet "$unit" 2>/dev/null; then
+      apply "disable + stop $unit" sudo systemctl disable --now "$unit"
+    else
+      skip "$unit not enabled or running"
+    fi
+  done
 }
 
 link_configs() {

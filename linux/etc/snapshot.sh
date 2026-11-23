@@ -602,11 +602,13 @@ unit_state() { # [--user] unit
 
 section_services() {
   local u
-  local -a podman_units app_units
+  local -a cli_units podman_units app_units
+  load cli_units 07-dev-toolshed CLI_UNITS
   load podman_units 07-dev-toolshed PODMAN_UNITS
   load app_units 10-apps APP_SERVICES
   heading "Services"
-  for u in "${SYSTEM_UNITS[@]}" "${app_units[@]}" "${podman_units[@]}"; do
+  for u in "${SYSTEM_UNITS[@]}" "${app_units[@]}" "${cli_units[@]}" \
+    "${podman_units[@]}"; do
     printf -- '- `%s`: %s\n' "$u" "$(unit_state "$u")"
   done
   for u in "${podman_units[@]}"; do
