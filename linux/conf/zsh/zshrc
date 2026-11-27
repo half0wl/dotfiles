@@ -137,6 +137,7 @@ gens() {
 alias c='clear'
 alias cw='cd ~/Workspace'
 alias opf='open .'
+alias cpb='wl-copy -n'
 alias reload='source ~/.zshrc'
 alias upall='upgrade-all'
 alias goodnight='dbus-send --session --print-reply --type=method_call --dest=org.kde.Shutdown /Shutdown org.kde.Shutdown.logout >/dev/null'
