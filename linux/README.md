@@ -1,6 +1,6 @@
-# <img src="../assets/linux.svg" height="28" align="absmiddle"> dotfiles -- Linux
+# <img src="../misc/docs/assets/linux.svg" height="28" align="absmiddle"> Linux
 
-[[<-- back to main]](../) | [[<img src="../assets/apple.svg" height="14" align="absmiddle"> macOS config -->]](../macos/)
+[[<-- back to main]](../) | [[<img src="../misc/docs/assets/apple.svg" height="14" align="absmiddle"> macOS config -->]](../macos/)
 
 ## Environment
 
@@ -167,4 +167,4 @@ instead -- edit the value there, then re-run the script.
 
 ---
 
-[[<-- back to main]](../) | [[<img src="../assets/apple.svg" height="14" align="absmiddle"> macOS config -->]](../macos/)
+[[<-- back to main]](../) | [[<img src="../misc/docs/assets/apple.svg" height="14" align="absmiddle"> macOS config -->]](../macos/)

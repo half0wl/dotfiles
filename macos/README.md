@@ -1,6 +1,6 @@
-# <img src="../assets/apple.svg" height="28" align="absmiddle"> dotfiles -- macOS
+# <img src="../misc/docs/assets/apple.svg" height="28" align="absmiddle"> macOS
 
-[[<-- back to main]](../) | [[<img src="../assets/linux.svg" height="14" align="absmiddle"> linux config -->]](../linux/)
+[[<-- back to main]](../) | [[<img src="../misc/docs/assets/linux.svg" height="14" align="absmiddle"> linux config -->]](../linux/)
 
 ## Setup
 
@@ -254,4 +254,4 @@ defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 2
 
 ---
 
-[[<-- back to main]](../) | [[<img src="../assets/linux.svg" height="14" align="absmiddle"> linux config -->]](../linux/)
+[[<-- back to main]](../) | [[<img src="../misc/docs/assets/linux.svg" height="14" align="absmiddle"> linux config -->]](../linux/)
